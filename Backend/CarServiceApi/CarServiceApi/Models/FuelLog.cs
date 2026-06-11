@@ -8,5 +8,6 @@
         public int CarKmCount { get; set; }
         public int FuelAmount { get; set; } 
         public int FuelCost { get; set; }
+
     }
 }
