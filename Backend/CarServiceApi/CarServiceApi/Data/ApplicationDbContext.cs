@@ -11,7 +11,7 @@ namespace CarServiceApi.Data
         {
         }
 
-        
+        public DbSet<User> Users { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<ServiceLog> ServiceLogs { get; set; }
         public DbSet<FuelLog> FuelLogs { get; set; }    
