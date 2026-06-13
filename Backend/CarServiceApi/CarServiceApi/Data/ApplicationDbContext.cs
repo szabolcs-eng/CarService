@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CarServiceApi.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
