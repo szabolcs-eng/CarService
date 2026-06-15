@@ -65,7 +65,7 @@ export default function Register() {
                   <input 
                     type="text" 
                     className="form-control" 
-                    placeholder="AutoMester99"
+                    placeholder="AutoMaster"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required 

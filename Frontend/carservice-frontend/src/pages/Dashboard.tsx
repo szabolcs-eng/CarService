@@ -103,8 +103,8 @@ export default function Dashboard() {
       {/* Bootstrap Navigációs sáv */}
       <nav className="navbar navbar-dark bg-primary shadow-sm mb-4">
         <div className="container">
-          <span className="navbar-brand mb-0 h1">🚗 CarService Irányítópult</span>
-          <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
+          <span className="navbar-brand mb-0 h1">🚗 CarService</span>
+          <button className="btn btn-outline-light btn-sm bg-danger" onClick={handleLogout}>
             Kijelentkezés
           </button>
         </div>
@@ -134,7 +134,7 @@ export default function Dashboard() {
                   </div>
                   <div className="mb-3">
                     <label className="form-label small">Évjárat</label>
-                    <input type="number" className="form-control form-control-sm" value={year} onChange={(e) => setYear(parseInt(e.target.value))} required />
+                    <input type="number" className="form-control form-control-sm" value={year} onChange={(e) => setYear(parseInt(e.target.value))} required min={1900}/>
                   </div>
                   <button type="submit" className="btn btn-success btn-sm w-100">Mentés a profilhoz</button>
                 </form>
@@ -144,7 +144,7 @@ export default function Dashboard() {
 
           {/* JOBB OLDAL: Járművek listája */}
           <div className="col-md-8">
-            <h3 className="mb-3 text-secondary">Saját járművek</h3>
+            <h3 className="mb-3">Saját járművek</h3>
             {vehicles.length === 0 ? (
               <div className="alert alert-info">Még nincs rögzített járműved. Adj hozzá egyet a bal oldali panelen!</div>
             ) : (
