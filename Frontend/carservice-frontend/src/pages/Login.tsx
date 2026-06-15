@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -28,8 +29,7 @@ export default function Login() {
       // Ideiglenes visszajelzés a teszteléshez
       alert('Sikeres bejelentkezés! A token elmentve.');
       
-      // Később ide navigálunk:
-      // navigate('/dashboard');
+      navigate('/dashboard');
 
     } catch (err: any) {
       // Ha a backend mondjuk 400 BadRequest-et dob (pl. Invalid email or password.)
@@ -78,6 +78,10 @@ export default function Login() {
                 <button type="submit" className="btn btn-primary w-100 py-2">
                   Belépés
                 </button>
+                <div className="text-center mt-3">
+                    <span className="text-muted">Még nincs fiókod? </span>
+                    <Link to="/register" className="text-decoration-none">Regisztrálj most!</Link>
+                </div>
               </form>
             </div>
           </div>
