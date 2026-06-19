@@ -18,7 +18,6 @@ interface ServiceLog {
   serviceCost: number;
 }
 
-// Új interfész az átlagfogyasztásnak
 interface AvgConsumptionData {
   totalDistanceKm: number;
   totalFuelUsedLiters: number;
@@ -33,7 +32,6 @@ export default function VehicleDetails() {
   const [serviceLogs, setServiceLogs] = useState<ServiceLog[]>([]);
   const [error, setError] = useState('');
 
-  // Átlagfogyasztás állapotai
   const [avgConsumption, setAvgConsumption] = useState<AvgConsumptionData | null>(null);
   const [avgError, setAvgError] = useState('');
 
@@ -58,23 +56,21 @@ export default function VehicleDetails() {
       setFuelLogs(fuelRes.data);
       setServiceLogs(serviceRes.data);
     } catch (err) {
-      setError('Hiba történt a naplók betöltésekor.');
+      setError('Error fetching logs. Please check the backend!');
     }
   };
 
-  // Külön függvény az átlagfogyasztás lekérésére
   const fetchAverageConsumption = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/FuelLog/vehicle/${id}/average-consumption`);
       setAvgConsumption(response.data);
-      setAvgError(''); // Ha sikeres, töröljük a hibaüzenetet
+      setAvgError(''); 
     } catch (err: any) {
       setAvgConsumption(null);
-      // Ha a backend pl. BadRequest-et dob (< 2 tankolás), kiírjuk a felhasználónak
       if (err.response && err.response.data && typeof err.response.data === 'string') {
         setAvgError(err.response.data);
       } else {
-        setAvgError('Nem sikerült betölteni az átlagfogyasztást.');
+        setAvgError('Error fetching average consumption. Please check the backend!');
       }
     }
   };
@@ -100,11 +96,10 @@ export default function VehicleDetails() {
       });
       setFuelKm(''); setFuelAmount(''); setFuelCost('');
       
-      // Frissítjük a listát ÉS az átlagfogyasztást is!
       fetchLogs();
       fetchAverageConsumption();
     } catch (err) {
-      setError('Nem sikerült menteni a tankolást.');
+      setError('Error adding fuel log. Please check the backend!');
     }
   };
 
@@ -121,7 +116,7 @@ export default function VehicleDetails() {
       setServiceKm(''); setServiceDesc(''); setServiceCost('');
       fetchLogs();
     } catch (err) {
-      setError('Nem sikerült menteni a szervizt.');
+      setError('Error adding service log. Please check the backend!');
     }
   };
 
@@ -130,9 +125,9 @@ export default function VehicleDetails() {
       <nav className="navbar navbar-dark bg-secondary shadow-sm mb-4">
         <div className="container">
           <button className="btn btn-outline-light btn-sm" onClick={() => navigate('/dashboard')}>
-            ⬅ Vissza a Dashboardra
+            ⬅ Back to Dashboard
           </button>
-          <span className="navbar-brand mb-0 h1">Jármű Részletek</span>
+          <span className="navbar-brand mb-0 h1">Vehicle Details</span>
         </div>
       </nav>
 
@@ -140,23 +135,21 @@ export default function VehicleDetails() {
         {error && <div className="alert alert-danger">{error}</div>}
 
         <div className="row">
-          {/* BAL OSZLOP: Tankolások */}
           <div className="col-md-6 mb-4">
-            <h4 className="text-success border-bottom pb-2 mb-3">⛽ Tankolási Napló</h4>
+            <h4 className="text-success border-bottom pb-2 mb-3">⛽ Fuel Logs</h4>
             
-            {/* ÚJ RÉSZ: Átlagfogyasztás kártya */}
             <div className="card shadow-sm border-success mb-3 bg-light">
               <div className="card-body py-2 text-center">
-                <h6 className="text-success fw-bold mb-1">📊 Átlagfogyasztás statisztika</h6>
+                <h6 className="text-success fw-bold mb-1">📊 Average Consumption Statistics</h6>
                 {avgConsumption ? (
                   <div className="d-flex justify-content-around mt-2">
-                    <div><small className="text-muted d-block">Távolság</small><strong>{avgConsumption.totalDistanceKm} km</strong></div>
-                    <div><small className="text-muted d-block">Fogyasztás</small><strong>{avgConsumption.totalFuelUsedLiters} L</strong></div>
-                    <div><small className="text-muted d-block">Átlag</small><strong className="text-danger fs-5">{avgConsumption.averageConsumption} L/100km</strong></div>
+                    <div><small className="text-muted d-block">Distance</small><strong>{avgConsumption.totalDistanceKm} km</strong></div>
+                    <div><small className="text-muted d-block">Consumption</small><strong>{avgConsumption.totalFuelUsedLiters} L</strong></div>
+                    <div><small className="text-muted d-block">Average</small><strong className="text-danger fs-5">{avgConsumption.averageConsumption} L/100km</strong></div>
                   </div>
                 ) : (
                   <p className="text-muted mb-0 mt-1 small">
-                    <i className="bi bi-info-circle"></i> {avgError || "Legalább 2 tankolás szükséges a számításhoz."}
+                    <i className="bi bi-info-circle"></i> {avgError || "At least 2 fuel logs are required for calculation."}
                   </p>
                 )}
               </div>
@@ -167,9 +160,9 @@ export default function VehicleDetails() {
                 <form onSubmit={handleAddFuel} className="row g-2">
                   <div className="col-6"><input type="date" className="form-control form-control-sm" value={fuelDate} onChange={e => setFuelDate(e.target.value)} required /></div>
                   <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Km óra állás" value={fuelKm} onChange={e => setFuelKm(Number(e.target.value))} required /></div>
-                  <div className="col-6"><input type="number" step="0.1" className="form-control form-control-sm" placeholder="Mennyiség (Liter)" value={fuelAmount} onChange={e => setFuelAmount(Number(e.target.value))} required /></div>
-                  <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Költség (Ft)" value={fuelCost} onChange={e => setFuelCost(Number(e.target.value))} required /></div>
-                  <div className="col-12"><button type="submit" className="btn btn-success btn-sm w-100 mt-2">Tankolás Rögzítése</button></div>
+                  <div className="col-6"><input type="number" step="0.1" className="form-control form-control-sm" placeholder="Quantity (Liters)" value={fuelAmount} onChange={e => setFuelAmount(Number(e.target.value))} required /></div>
+                  <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Cost (HUF)" value={fuelCost} onChange={e => setFuelCost(Number(e.target.value))} required /></div>
+                  <div className="col-12"><button type="submit" className="btn btn-success btn-sm w-100 mt-2">Add Fuel Log</button></div>
                 </form>
               </div>
             </div>
@@ -179,25 +172,24 @@ export default function VehicleDetails() {
                 <li key={log.id} className="list-group-item d-flex justify-content-between align-items-center">
                   <div>
                     <strong>{new Date(log.date).toLocaleDateString()}</strong> - {log.carKmCount} km
-                    <br/><small className="text-muted">{log.fuelAmount} L | {log.fuelCost} Ft</small>
+                    <br/><small className="text-muted">{log.fuelAmount} L | {log.fuelCost} HUF</small>
                   </div>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* JOBB OSZLOP: Szervizek */}
           <div className="col-md-6 mb-4">
-            <h4 className="text-warning border-bottom pb-2 mb-3">🔧 Szerviz Napló</h4>
+            <h4 className="text-warning border-bottom pb-2 mb-3">🔧 Service Logs</h4>
             
             <div className="card shadow-sm mb-4">
               <div className="card-body">
                 <form onSubmit={handleAddService} className="row g-2">
                   <div className="col-6"><input type="date" className="form-control form-control-sm" value={serviceDate} onChange={e => setServiceDate(e.target.value)} required /></div>
                   <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Km óra állás" value={serviceKm} onChange={e => setServiceKm(Number(e.target.value))} required /></div>
-                  <div className="col-12"><input type="text" className="form-control form-control-sm" placeholder="Szerviz leírása (pl. Olajcsere)" value={serviceDesc} onChange={e => setServiceDesc(e.target.value)} required /></div>
-                  <div className="col-12"><input type="number" className="form-control form-control-sm" placeholder="Költség (Ft)" value={serviceCost} onChange={e => setServiceCost(Number(e.target.value))} required /></div>
-                  <div className="col-12"><button type="submit" className="btn btn-warning btn-sm w-100 mt-2">Szerviz Rögzítése</button></div>
+                  <div className="col-12"><input type="text" className="form-control form-control-sm" placeholder="Service description (e.g., Oil Change)" value={serviceDesc} onChange={e => setServiceDesc(e.target.value)} required /></div>
+                  <div className="col-12"><input type="number" className="form-control form-control-sm" placeholder="Cost (HUF)" value={serviceCost} onChange={e => setServiceCost(Number(e.target.value))} required /></div>
+                  <div className="col-12"><button type="submit" className="btn btn-warning btn-sm w-100 mt-2">Add Service Log</button></div>
                 </form>
               </div>
             </div>
@@ -208,7 +200,7 @@ export default function VehicleDetails() {
                   <div>
                     <strong>{new Date(log.date).toLocaleDateString()}</strong> - {log.carKmCount} km
                     <br/><span>{log.serviceDescription}</span>
-                    <br/><small className="text-muted">{log.serviceCost} Ft</small>
+                    <br/><small className="text-muted">{log.serviceCost} HUF</small>
                   </div>
                 </li>
               ))}

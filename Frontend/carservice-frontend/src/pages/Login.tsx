@@ -6,37 +6,32 @@ import axios from 'axios';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // Hibaüzenetek tárolására
-  const navigate = useNavigate(); // Navigáláshoz a sikeres login után
+  const [error, setError] = useState(''); 
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(''); // Korábbi hibaüzenet törlése
+    setError(''); 
 
     try {
-      // ⚠️ FONTOS: Írd át a portot (számot) arra, amin a C# backend fut (pl. 7196, 5001)!
       const response = await axios.post('https://localhost:7196/api/Auth/login', {
         email: email,
         password: password
       });
 
-      // Sikeres kérés esetén a válasz (response.data) maga a JWT token szövege
       const token = response.data;
       
-      // Eltároljuk a böngészőben, hogy később is tudjuk használni
       localStorage.setItem('token', token);
 
-      // Ideiglenes visszajelzés a teszteléshez
-      alert('Sikeres bejelentkezés! A token elmentve.');
+      alert('Login is successful! Redirecting to dashboard...');
       
       navigate('/dashboard');
 
     } catch (err: any) {
-      // Ha a backend mondjuk 400 BadRequest-et dob (pl. Invalid email or password.)
       if (err.response && err.response.data) {
         setError(err.response.data);
       } else {
-        setError('Hálózati hiba történt. Fut a backend szerver?');
+        setError('Network error occurred. Please check the backend!');
       }
     }
   };
@@ -47,25 +42,24 @@ export default function Login() {
         <div className="col-md-5">
           <div className="card shadow-sm mt-5">
             <div className="card-body p-4">
-              <h2 className="text-center mb-4 text-primary">Bejelentkezés</h2>
+              <h2 className="text-center mb-4 text-primary">Login</h2>
               
-              {/* Ha van hibaüzenet, itt megjelenítjük egy piros dobozban */}
               {error && <div className="alert alert-danger">{error}</div>}
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label className="form-label">Email cím</label>
+                  <label className="form-label">Email</label>
                   <input 
                     type="email" 
                     className="form-control" 
-                    placeholder="pelda@email.com"
+                    placeholder="example@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required 
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="form-label">Jelszó</label>
+                  <label className="form-label">Password</label>
                   <input 
                     type="password" 
                     className="form-control" 
@@ -76,11 +70,11 @@ export default function Login() {
                   />
                 </div>
                 <button type="submit" className="btn btn-primary w-100 py-2">
-                  Belépés
+                  Login
                 </button>
                 <div className="text-center mt-3">
-                    <span className="text-muted">Még nincs fiókod? </span>
-                    <Link to="/register" className="text-decoration-none">Regisztrálj most!</Link>
+                    <span className="text-muted">Don't have an account? </span>
+                    <Link to="/register" className="text-decoration-none">Register now!</Link>
                 </div>
               </form>
             </div>

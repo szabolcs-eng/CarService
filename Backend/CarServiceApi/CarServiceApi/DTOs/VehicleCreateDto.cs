@@ -7,14 +7,14 @@ namespace CarServiceApi.DTOs
         [Required]
         public int UserId { get; set; }
 
-        [Required(ErrorMessage = "A rendszám megadása kötelező!")]
-        [StringLength(10, ErrorMessage = "A rendszám túl hosszú.")]
+        [Required(ErrorMessage = "License plate is required!")]
+        [StringLength(10, ErrorMessage = "License plate is too long.")]
         public string LicensePlate { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "A márka megadása kötelező!")]
+        [Required(ErrorMessage = "Brand is required!")]
         public string Brand { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "A modell megadása kötelező!")]
+        [Required(ErrorMessage = "Model is required!")]
         public string Model { get; set; } = string.Empty;
 
         [Required]

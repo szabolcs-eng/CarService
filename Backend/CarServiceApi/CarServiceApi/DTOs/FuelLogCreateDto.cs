@@ -4,22 +4,22 @@ namespace CarServiceApi.DTOs
 {
     public class FuelLogCreateDto
     {
-        [Required(ErrorMessage = "A jármű azonosítójának megadása kötelező!")]
+        [Required(ErrorMessage = "Vehicle ID is required!")]
         public int VehicleId { get; set; }
 
-        [Required(ErrorMessage = "A dátum megadása kötelező!")]
+        [Required(ErrorMessage = "Date is required!")]
         public DateTime Date { get; set; }
 
-        [Required(ErrorMessage = "A kilométeróra állásának megadása kötelező!")]
-        [Range(0, 2000000, ErrorMessage = "Érvénytelen kilométeróra állás!")]
+        [Required(ErrorMessage = "Odometer reading is required!")]
+        [Range(0, 2000000, ErrorMessage = "Invalid odometer reading!")]
         public int CarKmCount { get; set; }
 
-        [Required(ErrorMessage = "A tankolt mennyiség megadása kötelező!")]
-        [Range(1, 200, ErrorMessage = "Irreális üzemanyag mennyiség!")]
+        [Required(ErrorMessage = "Fuel amount is required!")]
+        [Range(1, 200, ErrorMessage = "Invalid fuel amount!")]
         public int FuelAmount { get; set; }
 
-        [Required(ErrorMessage = "A költség megadása kötelező!")]
-        [Range(0, 1000000, ErrorMessage = "Érvénytelen összeg!")]
+        [Required(ErrorMessage = "Fuel cost is required!")]
+        [Range(0, 1000000, ErrorMessage = "Invalid cost amount!")]
         public int FuelCost { get; set; }
     }
 }

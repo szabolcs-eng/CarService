@@ -4,11 +4,11 @@ namespace CarServiceApi.DTOs
 {
     public class UserLoginDto
     {
-        [Required(ErrorMessage = "Az e-mail cím megadása kötelező!")]
+        [Required(ErrorMessage = "Email is required!")]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "A jelszó megadása kötelező!")]
+        [Required(ErrorMessage = "Password is required!")]
         public string Password { get; set; } = string.Empty;
     }
 }

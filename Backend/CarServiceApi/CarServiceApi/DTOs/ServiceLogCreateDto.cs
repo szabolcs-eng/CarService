@@ -4,22 +4,22 @@ namespace CarServiceApi.DTOs
 {
     public class ServiceLogCreateDto
     {
-        [Required(ErrorMessage = "Meg kell adni, hogy melyik járműhöz tartozik a bejegyzés!")]
+        [Required(ErrorMessage = "Vehicle ID is required!")]
         public int VehicleId { get; set; }
 
-        [Required(ErrorMessage = "A dátum megadása kötelező!")]
+        [Required(ErrorMessage = "Date is required!")]
         public DateTime Date { get; set; }
 
-        [Required(ErrorMessage = "A kilométeróra állásának megadása kötelező!")]
-        [Range(0, 2000000, ErrorMessage = "Érvénytelen kilométeróra állás!")]
+        [Required(ErrorMessage = "Odometer reading is required!")]
+        [Range(0, 2000000, ErrorMessage = "Invalid odometer reading!")]
         public int CarKmCount { get; set; }
 
-        [Required(ErrorMessage = "A szerviz leírásának megadása kötelező!")]
-        [StringLength(500, ErrorMessage = "A leírás túl hosszú (maximum 500 karakter).")]
+        [Required(ErrorMessage = "Service description is required!")]
+        [StringLength(500, ErrorMessage = "The description is too long (maximum 500 characters).")]
         public string ServiceDescription { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "A költség megadása kötelező!")]
-        [Range(0, 10000000, ErrorMessage = "Érvénytelen összeg!")]
+        [Required(ErrorMessage = "Service cost is required!")]
+        [Range(0, 10000000, ErrorMessage = "Invalid cost amount!")]
         public int ServiceCost { get; set; }
     }
 }

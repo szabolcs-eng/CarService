@@ -31,7 +31,7 @@ namespace CarServiceApi.Controllers
             _context.Vehicles.Add(vehicle);
             _context.SaveChanges();
 
-            return Ok("A jármű sikeresen rögzítve a profilhoz!");
+            return Ok("Vehicle successfully added to the profile!");
         }
 
         [HttpGet("user-vehicles/{userId}")]
@@ -55,7 +55,7 @@ namespace CarServiceApi.Controllers
         public IActionResult UpdateVehicle(int id, VehicleCreateDto request)
         {
             var vehicle = _context.Vehicles.Find(id);
-            if (vehicle == null) return NotFound("A jármű nem található.");
+            if (vehicle == null) return NotFound("Vehicle not found.");
 
             vehicle.LicensePlate = request.LicensePlate;
             vehicle.Brand = request.Brand;
@@ -63,18 +63,18 @@ namespace CarServiceApi.Controllers
             vehicle.Year = request.Year;
 
             _context.SaveChanges();
-            return Ok("A jármű adatai sikeresen frissítve!");
+            return Ok("Vehicle details successfully updated!");
         }
 
         [HttpDelete("delete/{id}")]
         public IActionResult DeleteVehicle(int id)
         {
             var vehicle = _context.Vehicles.Find(id);
-            if (vehicle == null) return NotFound("A jármű nem található.");
+            if (vehicle == null) return NotFound("Vehicle not found.");
 
             _context.Vehicles.Remove(vehicle);
             _context.SaveChanges();
-            return Ok("A jármű (és a hozzá tartozó összes napló) sikeresen törölve!");
+            return Ok("Vehicle (and all associated logs) successfully deleted!");
         }
     }
 }

@@ -17,33 +17,29 @@ export default function Register() {
     setError('');
     setSuccess('');
 
-    // Kliensoldali ellenőrzés: egyeznek-e a jelszavak?
     if (password !== confirmPassword) {
-      setError('A két jelszó nem egyezik meg!');
+      setError('The two passwords do not match!');
       return;
     }
 
     try {
-      // ⚠️ FONTOS: A portot itt is egyeztesd a backended portjával (pl. 7196)!
       await axios.post('https://localhost:7196/api/Auth/register', {
         username: username,
         email: email,
         password: password
       });
 
-      setSuccess('Sikeres regisztráció! Átirányítás a bejelentkezéshez...');
+      setSuccess('Registration successful! Redirecting to login...');
       
-      // 2 másodperc múlva átirányítjuk a Login oldalra
       setTimeout(() => {
         navigate('/login');
       }, 2000);
 
     } catch (err: any) {
-      // Itt kapjuk el, ha pl. a backend azt mondja: "Email already exists." vagy "Username already exists."
       if (err.response && err.response.data) {
         setError(err.response.data);
       } else {
-        setError('Hálózati hiba történt. Kérlek ellenőrizd a backendet!');
+        setError('Network error occurred. Please check the backend!');
       }
     }
   };
@@ -54,14 +50,14 @@ export default function Register() {
         <div className="col-md-5">
           <div className="card shadow-sm mt-4">
             <div className="card-body p-4">
-              <h2 className="text-center mb-4 text-primary">Regisztráció</h2>
+              <h2 className="text-center mb-4 text-primary">Registration</h2>
               
               {error && <div className="alert alert-danger">{error}</div>}
               {success && <div className="alert alert-success">{success}</div>}
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label className="form-label">Felhasználónév</label>
+                  <label className="form-label">Username</label>
                   <input 
                     type="text" 
                     className="form-control" 
@@ -73,11 +69,11 @@ export default function Register() {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label">Email cím</label>
+                  <label className="form-label">Email</label>
                   <input 
                     type="email" 
                     className="form-control" 
-                    placeholder="pelda@email.com"
+                    placeholder="example@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required 
@@ -85,7 +81,7 @@ export default function Register() {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label">Jelszó</label>
+                  <label className="form-label">Password</label>
                   <input 
                     type="password" 
                     className="form-control" 
@@ -97,7 +93,7 @@ export default function Register() {
                 </div>
 
                 <div className="mb-4">
-                  <label className="form-label">Jelszó megerősítése</label>
+                  <label className="form-label">Confirm Password</label>
                   <input 
                     type="password" 
                     className="form-control" 
@@ -109,12 +105,12 @@ export default function Register() {
                 </div>
 
                 <button type="submit" className="btn btn-primary w-100 py-2 mb-3">
-                  Fiók létrehozása
+                  Create Account
                 </button>
 
                 <div className="text-center">
-                  <span className="text-muted">Már van fiókod? </span>
-                  <Link to="/login" className="text-decoration-none">Jelentkezz be!</Link>
+                  <span className="text-muted">Already have an account? </span>
+                  <Link to="/login" className="text-decoration-none">Sign in!</Link>
                 </div>
               </form>
             </div>

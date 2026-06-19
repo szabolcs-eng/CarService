@@ -22,7 +22,7 @@ namespace CarServiceApi.Controllers
             var vehicleExists = _context.Vehicles.Any(v => v.Id == request.VehicleId);
             if (!vehicleExists)
             {
-                return NotFound("A megadott jármű nem található.");
+                return NotFound("The specified vehicle was not found.");
             }
 
             var serviceLog = new ServiceLog
@@ -37,7 +37,7 @@ namespace CarServiceApi.Controllers
             _context.ServiceLogs.Add(serviceLog);
             _context.SaveChanges();
 
-            return Ok("A szervizbejegyzés sikeresen rögzítve!");
+            return Ok("Service log successfully added!");
         }
 
         [HttpGet("vehicle/{vehicleId}")]
@@ -62,7 +62,7 @@ namespace CarServiceApi.Controllers
         public IActionResult UpdateServiceLog(int id, ServiceLogCreateDto request)
         {
             var log = _context.ServiceLogs.Find(id);
-            if (log == null) return NotFound("A bejegyzés nem található.");
+            if (log == null) return NotFound("Service log not found.");
 
             log.Date = request.Date;
             log.CarKmCount = request.CarKmCount;
@@ -70,18 +70,18 @@ namespace CarServiceApi.Controllers
             log.ServiceCost = request.ServiceCost;
 
             _context.SaveChanges();
-            return Ok("A szervizbejegyzés sikeresen frissítve!");
+            return Ok("Service log successfully updated!");
         }
 
         [HttpDelete("delete/{id}")]
         public IActionResult DeleteServiceLog(int id)
         {
             var log = _context.ServiceLogs.Find(id);
-            if (log == null) return NotFound("A bejegyzés nem található.");
+            if (log == null) return NotFound("Service log not found.");
 
             _context.ServiceLogs.Remove(log);
             _context.SaveChanges();
-            return Ok("A szervizbejegyzés törölve!");
+            return Ok("Service log successfully deleted!");
         }
     }
 }
