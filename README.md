@@ -46,16 +46,7 @@ To test the project locally, clone the repository and run both the backend and f
 
 ## 📸 Screenshots
 
-*(Insert your screenshots here! Example: <img src="./assets/dashboard.png" width="800">)*
 * **Login and Registration**
 * **User Dashboard**
 * **Vehicle Details & Average Consumption**
 
-## 👨‍💻 About the Developer
-
-I am a 4th-semester Computer Science Engineering student at Óbuda University. Highly motivated, goal-oriented, and passionate about modern web technologies. I am actively looking for a **software/web development internship** where I can contribute to real-world projects and learn from experienced professionals.
-
-If you find my code promising and think I'd be a good fit for your team, please feel free to reach out!
-
----
-*Built with enthusiasm and a lot of coffee ☕ in 2026.*
