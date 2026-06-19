@@ -1,1 +1,59 @@
-# CarService
+🚗 CarService - Vehicle & Maintenance Tracker
+A comprehensive Full-Stack web application designed to help car owners track their vehicle expenses, fuel logs, and maintenance history in one clean, transparent platform.
+
+This project demonstrates the seamless integration of a modern, type-safe client-side interface (React + TypeScript) with a robust, scalable backend (ASP.NET Core REST API).
+
+✨ Key Features
+🔐 Secure Authentication: User registration and login featuring password hashing (BCrypt) and JWT (JSON Web Token) based session management.
+
+🚘 Vehicle Management: Register and track multiple user-specific vehicles (by Brand, Model, License Plate, and Year).
+
+⛽ Fuel Logs & Statistics: Log refueling events with dates, quantities, and costs. The system features a built-in algorithm that automatically calculates the vehicle's average consumption (L/100km) based on logged odometer readings.
+
+🔧 Service History: Keep a precise, documented record of maintenance, repairs, and associated costs.
+
+📱 Responsive UI: A clean, fast, and mobile-friendly user experience powered by Bootstrap 5.
+
+🛠️ Tech Stack
+The project is built on modern industry standards, maintaining a strict separation of concerns between the frontend and backend layers:
+
+Frontend (Client-Side):
+
+Framework: React (Powered by Vite for maximum performance)
+
+Language: TypeScript (Ensuring strict type safety and reducing runtime errors)
+
+Routing & Network: React Router DOM (SPA navigation), Axios (HTTP API requests)
+
+Styling: Bootstrap 5, Custom CSS
+
+Backend (Server-Side):
+
+Framework: C# / .NET (ASP.NET Core Web API)
+
+Database & ORM: SQL Server / SQLite, Entity Framework Core (Code-First approach)
+
+Security: JWT Bearer Token authentication, BCrypt password encryption, CORS policies
+
+🚀 Getting Started (Local Development)
+To test the project locally, clone the repository and run both the backend and frontend servers by following these steps:
+
+1. Running the Backend
+Navigate to the backend directory (via Visual Studio or terminal).
+
+Run the database migrations in the Package Manager Console: Update-Database, or via CLI: dotnet ef database update.
+
+Start the server: dotnet run. The server will run on https://localhost:7196 by default.
+
+2. Running the Frontend
+Open a new terminal and navigate to the frontend folder.
+
+Install the required dependencies:
+
+Bash
+npm install
+Start the Vite development server:
+
+Bash
+npm run dev
+Open your browser and navigate to the provided local URL (usually http://localhost:5173/).
