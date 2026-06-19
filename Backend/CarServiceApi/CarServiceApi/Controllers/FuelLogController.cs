@@ -19,11 +19,11 @@ namespace CarServiceApi.Controllers
         [HttpPost("add")]
         public IActionResult AddFuelLog(FuelLogCreateDto request)
         {
-            // Ellenőrizzük, hogy létezik-e az autó
+            // Check if the vehicle exists
             var vehicleExists = _context.Vehicles.Any(v => v.Id == request.VehicleId);
             if (!vehicleExists)
             {
-                return NotFound("A megadott jármű nem található.");
+                return NotFound("The specified vehicle was not found.");
             }
 
             var fuelLog = new FuelLog
@@ -38,7 +38,7 @@ namespace CarServiceApi.Controllers
             _context.FuelLogs.Add(fuelLog);
             _context.SaveChanges();
 
-            return Ok("A tankolás sikeresen rögzítve!");
+            return Ok("Fuel log successfully added!");
         }
 
         [HttpGet("vehicle/{vehicleId}")]
@@ -63,7 +63,7 @@ namespace CarServiceApi.Controllers
         public IActionResult UpdateFuelLog(int id, FuelLogCreateDto request)
         {
             var log = _context.FuelLogs.Find(id);
-            if (log == null) return NotFound("A tankolás nem található.");
+            if (log == null) return NotFound("Fuel log not found.");
 
             log.Date = request.Date;
             log.CarKmCount = request.CarKmCount;
@@ -71,18 +71,18 @@ namespace CarServiceApi.Controllers
             log.FuelCost = request.FuelCost;
 
             _context.SaveChanges();
-            return Ok("A tankolás adatai frissítve!");
+            return Ok("Fuel log details successfully updated!");
         }
 
         [HttpDelete("delete/{id}")]
         public IActionResult DeleteFuelLog(int id)
         {
             var log = _context.FuelLogs.Find(id);
-            if (log == null) return NotFound("A tankolás nem található.");
+            if (log == null) return NotFound("Fuel log not found.");
 
             _context.FuelLogs.Remove(log);
             _context.SaveChanges();
-            return Ok("A tankolás törölve!");
+            return Ok("Fuel log successfully deleted!");
         }
 
         [HttpGet("vehicle/{vehicleId}/average-consumption")]
@@ -95,7 +95,7 @@ namespace CarServiceApi.Controllers
 
             if (logs.Count < 2)
             {
-                return BadRequest("Legalább két tankolás rögzítése szükséges az átlagfogyasztás kiszámításához.");
+                return BadRequest("At least two fuel logs are required to calculate average consumption.");
             }
 
             var firstLog = logs.First();
@@ -104,7 +104,7 @@ namespace CarServiceApi.Controllers
 
             if (totalDistance <= 0)
             {
-                return BadRequest("A kilométeróra állások alapján nem történt haladás.");
+                return BadRequest("No distance covered based on the odometer readings.");
             }
 
             double totalFuelUsed = logs.Skip(1).Sum(f => f.FuelAmount);

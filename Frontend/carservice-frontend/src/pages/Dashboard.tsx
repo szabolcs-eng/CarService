@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// TypeScript interfész a járművek típusbiztonságához
 interface Vehicle {
   id: number;
   licensePlate: string;
@@ -16,13 +15,11 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Űrlap állapotok az új autó hozzáadásához
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [licensePlate, setLicensePlate] = useState('');
   const [year, setYear] = useState<number>(new Date().getFullYear());
 
-  // Segédfüggvény a userId kinyerésére a JWT tokenből
   const getUserIdFromToken = (): number | null => {
     const token = localStorage.getItem('token');
     if (!token) return null;
@@ -30,7 +27,6 @@ export default function Dashboard() {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const payload = JSON.parse(window.atob(base64));
-      // A .NET standard ClaimTypes.NameIdentifier kulcsa vagy a 'nameid' keresése
       const userId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || payload["nameid"];
       return userId ? parseInt(userId) : null;
     } catch (e) {
@@ -39,31 +35,26 @@ export default function Dashboard() {
   };
 
   const userId = getUserIdFromToken();
-  // ⚠️ FONTOS: Írd át a portot arra, amin a C# backend fut!
   const API_BASE_URL = 'https://localhost:7196/api/Vehicle';
 
-  // Autók betöltése az API-ból
   const fetchVehicles = async () => {
     if (!userId) return;
     try {
       const response = await axios.get(`${API_BASE_URL}/user-vehicles/${userId}`);
       setVehicles(response.data);
     } catch (err) {
-      setError('Nem sikerült betölteni a járműveket.');
+      setError('Vehicle list fetch failed. Please check the backend!');
     }
   };
 
-  // Ez a hook fut le az oldal betöltődésekor
   useEffect(() => {
     if (!localStorage.getItem('token') || !userId) {
-      // Ha nincs token, vagy érvénytelen, visszadobjuk a loginra
       navigate('/login');
     } else {
       fetchVehicles();
     }
   }, []);
 
-  // Új jármű beküldése
   const handleAddVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -79,20 +70,17 @@ export default function Dashboard() {
         year: year
       });
 
-      // Űrlap kiürítése sikeres mentés után
       setBrand('');
       setModel('');
       setLicensePlate('');
       setYear(new Date().getFullYear());
 
-      // Lista frissítése
       fetchVehicles();
     } catch (err) {
-      setError('Nem sikerült hozzáadni a járművet.');
+      setError('Failed to add the vehicle. Please check the backend!');
     }
   };
 
-  // Kijelentkezés
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
@@ -100,12 +88,11 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* Bootstrap Navigációs sáv */}
       <nav className="navbar navbar-dark bg-primary shadow-sm mb-4">
         <div className="container">
           <span className="navbar-brand mb-0 h1">🚗 CarService</span>
           <button className="btn btn-outline-light btn-sm bg-danger" onClick={handleLogout}>
-            Kijelentkezés
+            Logout
           </button>
         </div>
       </nav>
@@ -114,39 +101,37 @@ export default function Dashboard() {
         {error && <div className="alert alert-danger">{error}</div>}
 
         <div className="row">
-          {/* BAL OLDAL: Új autó hozzáadása form */}
           <div className="col-md-4 mb-4">
             <div className="card shadow-sm">
               <div className="card-body">
-                <h4 className="card-title text-primary mb-3">Új jármű rögzítése</h4>
+                <h4 className="card-title text-primary mb-3">New Vehicle</h4>
                 <form onSubmit={handleAddVehicle}>
                   <div className="mb-2">
-                    <label className="form-label small">Márka</label>
-                    <input type="text" className="form-control form-control-sm" placeholder="Pl. Ford" value={brand} onChange={(e) => setBrand(e.target.value)} required />
+                    <label className="form-label small">Brand</label>
+                    <input type="text" className="form-control form-control-sm" placeholder="e.g., Ford" value={brand} onChange={(e) => setBrand(e.target.value)} required />
                   </div>
                   <div className="mb-2">
-                    <label className="form-label small">Modell</label>
-                    <input type="text" className="form-control form-control-sm" placeholder="Pl. Focus" value={model} onChange={(e) => setModel(e.target.value)} required />
+                    <label className="form-label small">Model</label>
+                    <input type="text" className="form-control form-control-sm" placeholder="e.g., Focus" value={model} onChange={(e) => setModel(e.target.value)} required />
                   </div>
                   <div className="mb-2">
-                    <label className="form-label small">Rendszám</label>
-                    <input type="text" className="form-control form-control-sm" placeholder="Pl. ABC-123" value={licensePlate} onChange={(e) => setLicensePlate(e.target.value)} required />
+                    <label className="form-label small">License Plate</label>
+                    <input type="text" className="form-control form-control-sm" placeholder="e.g., ABC-123" value={licensePlate} onChange={(e) => setLicensePlate(e.target.value)} required />
                   </div>
                   <div className="mb-3">
-                    <label className="form-label small">Évjárat</label>
+                    <label className="form-label small">Year</label>
                     <input type="number" className="form-control form-control-sm" value={year} onChange={(e) => setYear(parseInt(e.target.value))} required min={1900}/>
                   </div>
-                  <button type="submit" className="btn btn-success btn-sm w-100">Mentés a profilhoz</button>
+                  <button type="submit" className="btn btn-success btn-sm w-100">Save to Profile</button>
                 </form>
               </div>
             </div>
           </div>
 
-          {/* JOBB OLDAL: Járművek listája */}
           <div className="col-md-8">
-            <h3 className="mb-3">Saját járművek</h3>
+            <h3 className="mb-3">My Vehicles</h3>
             {vehicles.length === 0 ? (
-              <div className="alert alert-info">Még nincs rögzített járműved. Adj hozzá egyet a bal oldali panelen!</div>
+              <div className="alert alert-info">You don't have any vehicles registered yet. Add one from the panel on the left!</div>
             ) : (
               <div className="row row-cols-1 row-cols-md-2 g-3">
                 {vehicles.map((vehicle) => (
@@ -156,13 +141,13 @@ export default function Dashboard() {
                         <div>
                           <div className="badge bg-secondary mb-2">{vehicle.licensePlate}</div>
                           <h5 className="card-title mb-1">{vehicle.brand} {vehicle.model}</h5>
-                          <p className="text-muted small">Évjárat: {vehicle.year}</p>
+                          <p className="text-muted small">Year: {vehicle.year}</p>
                         </div>
                         <button 
                           className="btn btn-outline-primary btn-sm mt-3 w-100"
                           onClick={() => navigate(`/vehicle/${vehicle.id}`)}
                         >
-                          Részletek és Naplók ➔
+                          Details and Logs ➔
                         </button>
                       </div>
                     </div>

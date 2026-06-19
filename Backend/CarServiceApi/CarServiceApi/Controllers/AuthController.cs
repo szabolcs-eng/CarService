@@ -1,7 +1,6 @@
 ﻿using CarServiceApi.Data;
 using CarServiceApi.DTOs;
 using CarServiceApi.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -28,27 +27,26 @@ namespace CarServiceApi.Controllers
         {
             if (_context.Users.Any(u => u.Email == request.Email))
             {
-                return BadRequest("Email already exists.");
+                return BadRequest("This email is already registered.");
             }
-                
 
             if (_context.Users.Any(u => u.Username == request.Username))
             {
-                return BadRequest("Username already exists.");
+                return BadRequest("This username is already taken.");
             }
-                
 
             var user = new User
             {
                 Username = request.Username,
                 Email = request.Email,
+                // Jelszó hashelése BCrypt segítségével
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
             };
 
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return Ok("User registered successfully.");
+            return Ok("User successfully registered!");
         }
 
         [HttpPost("login")]
@@ -60,13 +58,11 @@ namespace CarServiceApi.Controllers
             {
                 return BadRequest("Invalid email or password.");
             }
-                
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return BadRequest("Invalid email or password.");
             }
-                
 
             string token = CreateToken(user);
 
@@ -76,11 +72,11 @@ namespace CarServiceApi.Controllers
         private string CreateToken(User user)
         {
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 _configuration.GetSection("Jwt:Key").Value!));
