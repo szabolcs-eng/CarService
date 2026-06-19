@@ -47,6 +47,12 @@ To test the project locally, clone the repository and run both the backend and f
 ## 📸 Screenshots
 
 * **Login and Registration**
-* **User Dashboard**
-* **Vehicle Details & Average Consumption**
+<img width="1873" height="918" alt="Képernyőkép 2026-06-19 143553" src="https://github.com/user-attachments/assets/276d3336-b0c7-461f-9b5f-568133004eb3" />
 
+<img width="1867" height="922" alt="Képernyőkép 2026-06-19 143621" src="https://github.com/user-attachments/assets/d6bb15d3-f23d-4a7a-adb1-516d79977d8c" />
+
+* **User Dashboard**
+<img width="1871" height="925" alt="Képernyőkép 2026-06-19 143702" src="https://github.com/user-attachments/assets/236c3dde-00f9-4476-bfdf-3dd7bd659f1d" />
+
+* **Vehicle Details & Average Consumption**
+<img width="1877" height="915" alt="Képernyőkép 2026-06-19 143907" src="https://github.com/user-attachments/assets/0afdb9ab-5c5a-4f51-bac9-856b625c73a4" />
