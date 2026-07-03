@@ -35,7 +35,7 @@ export default function Dashboard() {
   };
 
   const userId = getUserIdFromToken();
-  const API_BASE_URL = 'https://localhost:7196/api/Vehicle';
+  const API_BASE_URL = 'http://localhost:8080/api/Vehicle';
 
   const fetchVehicles = async () => {
     if (!userId) return;

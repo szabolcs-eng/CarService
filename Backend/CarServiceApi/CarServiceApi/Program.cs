@@ -71,4 +71,27 @@ app.UseCors("AllowAll");
 
 app.MapControllers();
 
+// --- Adatbázis automatikus inicializálása (Migration / EnsureCreated) ---
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        // Elkérjük a DI-től a te ApplicationDbContext-edet
+        var context = services.GetRequiredService<ApplicationDbContext>();
+
+        // Ez a parancs létrehozza az adatbázis fájlt és az ÖSSZES táblát, ha még nem léteznek
+        context.Database.EnsureCreated();
+
+        // Tipp: Ha használsz EF Core Migrációkat (Migrations), az EnsureCreated() helyett 
+        // a context.Database.Migrate(); parancsot is használhatod, az még profibb.
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Hiba történt az adatbázis inicializálása közben.");
+    }
+}
+
+// Ennek kell a legutolsó sornak lennie
 app.Run();
