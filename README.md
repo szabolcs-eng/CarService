@@ -46,16 +46,13 @@ To test the project locally, clone the repository and run both the backend and f
 
 ## 📸 Screenshots
 
-*(Insert your screenshots here! Example: <img src="./assets/dashboard.png" width="800">)*
 * **Login and Registration**
+<img width="1873" height="918" alt="Képernyőkép 2026-06-19 143553" src="https://github.com/user-attachments/assets/276d3336-b0c7-461f-9b5f-568133004eb3" />
+
+<img width="1867" height="922" alt="Képernyőkép 2026-06-19 143621" src="https://github.com/user-attachments/assets/d6bb15d3-f23d-4a7a-adb1-516d79977d8c" />
+
 * **User Dashboard**
+<img width="1871" height="925" alt="Képernyőkép 2026-06-19 143702" src="https://github.com/user-attachments/assets/236c3dde-00f9-4476-bfdf-3dd7bd659f1d" />
+
 * **Vehicle Details & Average Consumption**
-
-## 👨‍💻 About the Developer
-
-I am a 4th-semester Computer Science Engineering student at Óbuda University. Highly motivated, goal-oriented, and passionate about modern web technologies. I am actively looking for a **software/web development internship** where I can contribute to real-world projects and learn from experienced professionals.
-
-If you find my code promising and think I'd be a good fit for your team, please feel free to reach out!
-
----
-*Built with enthusiasm and a lot of coffee ☕ in 2026.*
+<img width="1877" height="915" alt="Képernyőkép 2026-06-19 143907" src="https://github.com/user-attachments/assets/0afdb9ab-5c5a-4f51-bac9-856b625c73a4" />
