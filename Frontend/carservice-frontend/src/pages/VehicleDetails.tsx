@@ -45,7 +45,7 @@ export default function VehicleDetails() {
   const [serviceDesc, setServiceDesc] = useState('');
   const [serviceCost, setServiceCost] = useState<number | ''>('');
 
-  const API_BASE_URL = 'https://localhost:7196/api';
+  const API_BASE_URL = 'http://localhost:8080/api';
 
   const fetchLogs = async () => {
     try {
@@ -159,7 +159,7 @@ export default function VehicleDetails() {
               <div className="card-body">
                 <form onSubmit={handleAddFuel} className="row g-2">
                   <div className="col-6"><input type="date" className="form-control form-control-sm" value={fuelDate} onChange={e => setFuelDate(e.target.value)} required /></div>
-                  <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Km óra állás" value={fuelKm} onChange={e => setFuelKm(Number(e.target.value))} required /></div>
+                  <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Odometer Reading" value={fuelKm} onChange={e => setFuelKm(Number(e.target.value))} required /></div>
                   <div className="col-6"><input type="number" step="0.1" className="form-control form-control-sm" placeholder="Quantity (Liters)" value={fuelAmount} onChange={e => setFuelAmount(Number(e.target.value))} required /></div>
                   <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Cost (HUF)" value={fuelCost} onChange={e => setFuelCost(Number(e.target.value))} required /></div>
                   <div className="col-12"><button type="submit" className="btn btn-success btn-sm w-100 mt-2">Add Fuel Log</button></div>
@@ -186,7 +186,7 @@ export default function VehicleDetails() {
               <div className="card-body">
                 <form onSubmit={handleAddService} className="row g-2">
                   <div className="col-6"><input type="date" className="form-control form-control-sm" value={serviceDate} onChange={e => setServiceDate(e.target.value)} required /></div>
-                  <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Km óra állás" value={serviceKm} onChange={e => setServiceKm(Number(e.target.value))} required /></div>
+                  <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Odometer Reading" value={serviceKm} onChange={e => setServiceKm(Number(e.target.value))} required /></div>
                   <div className="col-12"><input type="text" className="form-control form-control-sm" placeholder="Service description (e.g., Oil Change)" value={serviceDesc} onChange={e => setServiceDesc(e.target.value)} required /></div>
                   <div className="col-12"><input type="number" className="form-control form-control-sm" placeholder="Cost (HUF)" value={serviceCost} onChange={e => setServiceCost(Number(e.target.value))} required /></div>
                   <div className="col-12"><button type="submit" className="btn btn-warning btn-sm w-100 mt-2">Add Service Log</button></div>

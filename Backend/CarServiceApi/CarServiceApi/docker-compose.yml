@@ -1,0 +1,29 @@
+﻿services:
+  # 1. A Frontend (React + Nginx)
+  frontend:
+    build: 
+      context: ../../../Frontend/carservice-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  # 2. A Backend API (.NET 10)
+  api:
+    build: 
+      context: .  
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Jwt__Key=Ide_Egy_Nagyon_Hosszú_És_Biztonságos_Titkos_Kulcsot_Írj_2026
+      - Jwt__Issuer=CarService
+      - Jwt__Audience=CarServiceUsers
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/carservice.db
+    volumes:
+      - carservice_storage:/app/data
+
+volumes:
+  carservice_storage:

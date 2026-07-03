@@ -1,0 +1,27 @@
+name: CarService Backend CI
+
+# A folyamat elindul, ha a 'main' ágra pusholsz, vagy egy Pull Requestet nyitsz
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Kód letöltése a virtuális gépre
+      uses: actions/checkout@v4
+
+    - name: .NET 10 környezet felállítása
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Függőségek letöltése (Restore)
+      run: dotnet restore Backend/CarServiceApi/CarServiceApi/CarServiceApi.csproj
+
+    - name: Alkalmazás lefordítása (Build)
+      run: dotnet build Backend/CarServiceApi/CarServiceApi/CarServiceApi.csproj --no-restore --configuration Release
