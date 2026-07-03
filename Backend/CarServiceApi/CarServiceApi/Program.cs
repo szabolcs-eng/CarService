@@ -89,7 +89,7 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Hiba történt az adatbázis inicializálása közben.");
+        logger.LogError(ex, "Error, while initializing the database.");
     }
 }
 
