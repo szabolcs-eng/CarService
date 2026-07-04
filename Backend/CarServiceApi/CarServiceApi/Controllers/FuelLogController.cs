@@ -104,7 +104,7 @@ namespace CarServiceApi.Controllers
 
             if (totalDistance <= 0)
             {
-                return BadRequest("No distance covered based on the odometer readings.");
+                return BadRequest("No distance covered based on the odometer.");
             }
 
             double totalFuelUsed = logs.Skip(1).Sum(f => f.FuelAmount);
