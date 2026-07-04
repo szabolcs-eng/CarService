@@ -1,5 +1,5 @@
 ﻿services:
-  # 1. A Frontend (React + Nginx)
+  # 1. Frontend (React + Nginx)
   frontend:
     build: 
       context: ../../../Frontend/carservice-frontend
@@ -9,7 +9,7 @@
     depends_on:
       - api
 
-  # 2. A Backend API (.NET 10)
+  # 2. Backend API (.NET 10)
   api:
     build: 
       context: .  
