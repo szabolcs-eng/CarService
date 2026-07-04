@@ -1,6 +1,5 @@
 name: CarService Backend CI
 
-# A folyamat elindul, ha a 'main' ágra pusholsz, vagy egy Pull Requestet nyitsz
 on:
   push:
     branches: [ "main" ]
