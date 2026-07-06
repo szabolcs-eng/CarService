@@ -1,4 +1,5 @@
 using CarServiceApi.Data;
+using CarServiceApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +8,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<IFuelLogService, FuelLogService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -67,20 +68,14 @@ app.UseCors("AllowAll");
 
 app.MapControllers();
 
-// --- Adatbázis automatikus inicializálása (Migration / EnsureCreated) ---
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
-        // Elkérjük a DI-től a te ApplicationDbContext-edet
         var context = services.GetRequiredService<ApplicationDbContext>();
 
-        // Ez a parancs létrehozza az adatbázis fájlt és az ÖSSZES táblát, ha még nem léteznek
         context.Database.EnsureCreated();
-
-        // Tipp: Ha használsz EF Core Migrációkat (Migrations), az EnsureCreated() helyett 
-        // a context.Database.Migrate(); parancsot is használhatod, az még profibb.
     }
     catch (Exception ex)
     {
@@ -88,6 +83,4 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Error, while initializing the database.");
     }
 }
-
-// Ennek kell a legutolsó sornak lennie
 app.Run();

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using CarServiceApi.Data;
-using CarServiceApi.Models;
+﻿using CarServiceApi.Data;
 using CarServiceApi.DTOs;
+using CarServiceApi.Models;
+using CarServiceApi.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarServiceApi.Controllers
 {
@@ -9,115 +11,86 @@ namespace CarServiceApi.Controllers
     [ApiController]
     public class FuelLogController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
 
-        public FuelLogController(ApplicationDbContext context)
+        private readonly IFuelLogService _fuelLogService;
+
+
+        public FuelLogController(IFuelLogService fuelLogService)
         {
-            _context = context;
+            _fuelLogService = fuelLogService;
         }
+
+
 
         [HttpPost("add")]
-        public IActionResult AddFuelLog(FuelLogCreateDto request)
+        public async Task<IActionResult> AddFuelLog(FuelLogCreateDto request)
         {
-            // Check if the vehicle exists
-            var vehicleExists = _context.Vehicles.Any(v => v.Id == request.VehicleId);
-            if (!vehicleExists)
+            try
             {
-                return NotFound("The specified vehicle was not found.");
+                await _fuelLogService.AddFuelLogAsync(request);
+                return Ok("Fuel log successfully added!");
+
             }
-
-            var fuelLog = new FuelLog
+            catch (KeyNotFoundException ex)
             {
-                VehicleId = request.VehicleId,
-                Date = request.Date,
-                CarKmCount = request.CarKmCount,
-                FuelAmount = request.FuelAmount,
-                FuelCost = request.FuelCost
-            };
-
-            _context.FuelLogs.Add(fuelLog);
-            _context.SaveChanges();
-
-            return Ok("Fuel log successfully added!");
+                return NotFound(ex.Message);
+            }
         }
 
-        [HttpGet("vehicle/{vehicleId}")]
-        public IActionResult GetFuelLogsForVehicle(int vehicleId)
-        {
-            var logs = _context.FuelLogs
-                .Where(f => f.VehicleId == vehicleId)
-                .OrderByDescending(f => f.Date)
-                .Select(f => new
-                {
-                    f.Id,
-                    f.Date,
-                    f.CarKmCount,
-                    f.FuelAmount,
-                    f.FuelCost
-                }).ToList();
 
+
+        [HttpGet("vehicle/{vehicleId}")]
+        public async Task<IActionResult> GetFuelLogsForVehicle(int vehicleId)
+        {
+            var logs = await _fuelLogService.GetFuelLogsForVehicleAsync(vehicleId);
             return Ok(logs);
         }
 
+
+
         [HttpPut("update/{id}")]
-        public IActionResult UpdateFuelLog(int id, FuelLogCreateDto request)
+        public async Task<IActionResult> UpdateFuelLog(int id, FuelLogCreateDto request)
         {
-            var log = _context.FuelLogs.Find(id);
-            if (log == null) return NotFound("Fuel log not found.");
-
-            log.Date = request.Date;
-            log.CarKmCount = request.CarKmCount;
-            log.FuelAmount = request.FuelAmount;
-            log.FuelCost = request.FuelCost;
-
-            _context.SaveChanges();
-            return Ok("Fuel log details successfully updated!");
+            try
+            {
+                await _fuelLogService.UpdateFuelLogAsync(id, request);
+                return Ok("Fuel log details successfully updated!");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
+        
+
 
         [HttpDelete("delete/{id}")]
-        public IActionResult DeleteFuelLog(int id)
+        public async Task<IActionResult> DeleteFuelLog(int id)
         {
-            var log = _context.FuelLogs.Find(id);
-            if (log == null) return NotFound("Fuel log not found.");
-
-            _context.FuelLogs.Remove(log);
-            _context.SaveChanges();
-            return Ok("Fuel log successfully deleted!");
+            try
+            {
+                await _fuelLogService.DeleteFuelLogAsync(id);
+                return Ok("Fuel log successfully deleted!");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpGet("vehicle/{vehicleId}/average-consumption")]
-        public IActionResult GetAverageConsumption(int vehicleId)
+        public async Task<IActionResult> GetAverageConsumption(int vehicleId)
         {
-            var logs = _context.FuelLogs
-                .Where(f => f.VehicleId == vehicleId)
-                .OrderBy(f => f.CarKmCount)
-                .ToList();
-
-            if (logs.Count < 2)
+            try
             {
-                return BadRequest("At least two fuel logs are required to calculate average consumption.");
+                var result = await _fuelLogService.GetAverageFuelConsumptionAsync(vehicleId);
+                return Ok(result);
+
             }
-
-            var firstLog = logs.First();
-            var lastLog = logs.Last();
-            int totalDistance = lastLog.CarKmCount - firstLog.CarKmCount;
-
-            if (totalDistance <= 0)
+            catch (InvalidOperationException ex)
             {
-                return BadRequest("No distance covered based on the odometer.");
+                return BadRequest(ex.Message);
             }
-
-            double totalFuelUsed = logs.Skip(1).Sum(f => f.FuelAmount);
-
-            double averageConsumption = (totalFuelUsed / totalDistance) * 100;
-
-            return Ok(new
-            {
-                VehicleId = vehicleId,
-                TotalDistanceKm = totalDistance,
-                TotalFuelUsedLiters = totalFuelUsed,
-                AverageConsumption = Math.Round(averageConsumption, 2)
-            });
         }
     }
 }
