@@ -1,4 +1,5 @@
 ﻿using CarServiceApi.DTOs;
+using CarServiceApi.Filters;
 using CarServiceApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,10 +38,10 @@ namespace CarServiceApi.Controllers
 
 
         [HttpGet("vehicle/{vehicleId}")]
-        public async Task<IActionResult> GetFuelLogsForVehicle(int vehicleId)
+        public async Task<IActionResult> GetFuelLogsForVehicle(int vehicleId, [FromQuery] PaginationFilter filter)
         {
-            var logs = await _fuelLogService.GetFuelLogsForVehicleAsync(vehicleId);
-            return Ok(logs);
+            var response = await _fuelLogService.GetFuelLogsForVehicleAsync(vehicleId, filter);
+            return Ok(response);
         }
 
 
