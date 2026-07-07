@@ -1,6 +1,8 @@
 ﻿using CarServiceApi.Data;
 using CarServiceApi.DTOs;
+using CarServiceApi.Filters;
 using CarServiceApi.Models;
+using CarServiceApi.Wrappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarServiceApi.Services
@@ -48,12 +50,23 @@ namespace CarServiceApi.Services
 
 
 
-        public async Task<List<object>> GetServiceLogsForVehicleAsync(int vehicleId)
+        public async Task<PagedResponse<List<object>>> GetServiceLogsForVehicleAsync(int vehicleId, PaginationFilter filter)
         {
-            var logs = await _context.ServiceLogs
+            var query = _context.ServiceLogs
                 .AsNoTracking()
-                .Where(s => s.VehicleId == vehicleId)
+                .Where(s => s.VehicleId == vehicleId);
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+            {
+                query = query.Where(s => s.ServiceDescription.ToLower().Contains(filter.SearchTerm.ToLower()));
+            }
+
+            int totalRecords = await query.CountAsync();
+
+            var logs = await query
                 .OrderByDescending(s => s.Date)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize) 
                 .Select(s => new
                 {
                     s.Id,
@@ -63,7 +76,9 @@ namespace CarServiceApi.Services
                     s.ServiceCost
                 }).ToListAsync();
 
-            return logs.Cast<object>().ToList();
+            var data = logs.Cast<object>().ToList();
+
+            return new PagedResponse<List<object>>(data, filter.PageNumber, filter.PageSize, totalRecords);
         }
 
 

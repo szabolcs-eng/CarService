@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using CarServiceApi.DTOs;
+﻿using CarServiceApi.DTOs;
+using CarServiceApi.Filters;
 using CarServiceApi.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CarServiceApi.Controllers
 {
@@ -34,10 +35,10 @@ namespace CarServiceApi.Controllers
 
 
         [HttpGet("vehicle/{vehicleId}")]
-        public async Task<IActionResult> GetServiceLogsForVehicle(int vehicleId)
+        public async Task<IActionResult> GetServiceLogsForVehicle(int vehicleId, [FromQuery] PaginationFilter filter)
         {
-            var logs = await _serviceLogService.GetServiceLogsForVehicleAsync(vehicleId);
-            return Ok(logs);
+            var response = await _serviceLogService.GetServiceLogsForVehicleAsync(vehicleId, filter);
+            return Ok(response);
         }
 
 
@@ -63,7 +64,7 @@ namespace CarServiceApi.Controllers
         {
             try
             {
-                _serviceLogService.DeleteServiceLogAsync(id);
+                await _serviceLogService.DeleteServiceLogAsync(id);
                 return Ok("Service log successfully deleted!");
             }
             catch (KeyNotFoundException ex)

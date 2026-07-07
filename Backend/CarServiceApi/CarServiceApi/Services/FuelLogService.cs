@@ -1,6 +1,8 @@
 ﻿using CarServiceApi.Data;
 using CarServiceApi.DTOs;
+using CarServiceApi.Filters;
 using CarServiceApi.Models;
+using CarServiceApi.Wrappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarServiceApi.Services
@@ -34,6 +36,8 @@ namespace CarServiceApi.Services
             await _context.SaveChangesAsync();
         }
 
+
+
         public async Task DeleteFuelLogAsync(int fuelLogId)
         {
             var log = await _context.FuelLogs.FindAsync(fuelLogId);
@@ -42,6 +46,8 @@ namespace CarServiceApi.Services
             _context.FuelLogs.Remove(log);
             await _context.SaveChangesAsync();
         }
+
+
 
         public async Task<object> GetAverageFuelConsumptionAsync(int vehicleId)
         {
@@ -71,23 +77,35 @@ namespace CarServiceApi.Services
             };
         }
 
-        public async Task<List<object>> GetFuelLogsForVehicleAsync(int vehicleId)
+
+
+        public async Task<PagedResponse<List<object>>> GetFuelLogsForVehicleAsync(int vehicleId, PaginationFilter filter)
         {
-            var logs =  await _context.FuelLogs
+            var query = _context.FuelLogs
                 .AsNoTracking()
-                .Where(f => f.VehicleId == vehicleId)
-                .OrderByDescending(f => f.Date)
-                .Select(f => new
+                .Where(s => s.VehicleId == vehicleId);
+
+            int totalRecords = await query.CountAsync();
+
+            var logs = await query
+                .OrderByDescending(s => s.Date)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .Select(s => new
                 {
-                    f.Id,
-                    f.Date,
-                    f.CarKmCount,
-                    f.FuelAmount,
-                    f.FuelCost
+                    s.Id,
+                    s.Date,
+                    s.CarKmCount,
+                    s.FuelAmount,
+                    s.FuelCost
                 }).ToListAsync();
 
-            return logs.Cast<object>().ToList();
+            var data = logs.Cast<object>().ToList();
+
+            return new PagedResponse<List<object>>(data, filter.PageNumber, filter.PageSize, totalRecords);
         }
+
+
 
         public async Task UpdateFuelLogAsync(int fuelLogId, FuelLogCreateDto request)
         {

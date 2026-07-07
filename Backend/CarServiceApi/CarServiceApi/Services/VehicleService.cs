@@ -1,6 +1,8 @@
 ﻿using CarServiceApi.Data;
 using CarServiceApi.DTOs;
+using CarServiceApi.Filters;
 using CarServiceApi.Models;
+using CarServiceApi.Wrappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarServiceApi.Services
@@ -33,6 +35,8 @@ namespace CarServiceApi.Services
 
         }
 
+
+
         public async Task DeleteVehicleAsync(int vehicleId)
         {
             var vehicle = await _context.Vehicles.FindAsync(vehicleId);
@@ -42,11 +46,29 @@ namespace CarServiceApi.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<object>> GetUserVehiclesAsync(int userId)
+
+
+        public async Task<PagedResponse<List<object>>> GetUserVehiclesAsync(int userId, PaginationFilter filter)
         {
-            var vehicles = await _context.Vehicles
+            var query = _context.Vehicles
                 .AsNoTracking()
-                .Where(v => v.UserId == userId)
+                .Where(v => v.UserId == userId);
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
+            {
+                var searchTerm = filter.SearchTerm.ToLower();
+                query = query.Where(v =>
+                    v.LicensePlate.ToLower().Contains(searchTerm) ||
+                    v.Brand.ToLower().Contains(searchTerm) ||
+                    v.Model.ToLower().Contains(searchTerm));
+            }
+
+            int totalRecords = await query.CountAsync();
+
+            var vehicles = await query
+                .OrderBy(v => v.Brand).ThenBy(v => v.Model)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
                 .Select(v => new
                 {
                     v.Id,
@@ -56,8 +78,12 @@ namespace CarServiceApi.Services
                     v.Year
                 }).ToListAsync();
 
-            return vehicles.Cast<object>().ToList();
+            var data = vehicles.Cast<object>().ToList();
+
+            return new PagedResponse<List<object>>(data, filter.PageNumber, filter.PageSize, totalRecords);
         }
+
+
 
         public async Task UpdateVehicleAsync(int vehicleId, VehicleCreateDto request)
         {

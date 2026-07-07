@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using CarServiceApi.DTOs;
+﻿using CarServiceApi.DTOs;
+using CarServiceApi.Filters;
 using CarServiceApi.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CarServiceApi.Controllers
 {
@@ -35,10 +36,10 @@ namespace CarServiceApi.Controllers
 
 
         [HttpGet("user-vehicles/{userId}")]
-        public async Task<IActionResult> GetUserVehicles(int userId)
+        public async Task<IActionResult> GetUserVehicles(int userId, [FromQuery] PaginationFilter filter)
         {
-            var vehicles = await _vehicleService.GetUserVehiclesAsync(userId);
-            return Ok(vehicles);
+            var response = await _vehicleService.GetUserVehiclesAsync(userId, filter);
+            return Ok(response);
         }
 
 
