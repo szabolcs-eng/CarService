@@ -23,9 +23,18 @@ namespace CarServiceApi.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddVehicle(VehicleCreateDto request)
         {
-            await _vehicleService.AddVehicleAsync(request);
-            return Ok("Vehicle successfully added to the profile!");
+            try
+            {
+                await _vehicleService.AddVehicleAsync(request);
+                return Ok("Vehicle successfully added to the profile!");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
+
+
 
         [HttpGet("user-vehicles/{userId}")]
         public async Task<IActionResult> GetUserVehicles(int userId)
@@ -33,6 +42,8 @@ namespace CarServiceApi.Controllers
             var vehicles = await _vehicleService.GetUserVehiclesAsync(userId);
             return Ok(vehicles);
         }
+
+
 
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateVehicle(int id, VehicleCreateDto request)
@@ -48,6 +59,8 @@ namespace CarServiceApi.Controllers
 
             }
         }
+
+
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteVehicle(int id)

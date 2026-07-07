@@ -12,6 +12,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IFuelLogService, FuelLogService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IServiceLogService, ServiceLogService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
