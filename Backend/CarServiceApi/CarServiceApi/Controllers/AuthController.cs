@@ -1,12 +1,6 @@
-﻿using CarServiceApi.Data;
-using CarServiceApi.DTOs;
-using CarServiceApi.Models;
+﻿using CarServiceApi.DTOs;
 using CarServiceApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace CarServiceApi.Controllers
 {
@@ -50,7 +44,7 @@ namespace CarServiceApi.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return BadRequest(ex.Message);
+                return Unauthorized(ex.Message);
             }
         }
     }

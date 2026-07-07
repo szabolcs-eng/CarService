@@ -1,9 +1,6 @@
-﻿using CarServiceApi.Data;
-using CarServiceApi.DTOs;
-using CarServiceApi.Models;
+﻿using CarServiceApi.DTOs;
 using CarServiceApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CarServiceApi.Controllers
 {
