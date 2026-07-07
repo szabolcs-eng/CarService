@@ -2,6 +2,7 @@
 using CarServiceApi.Data;
 using CarServiceApi.Models;
 using CarServiceApi.DTOs;
+using CarServiceApi.Services;
 
 namespace CarServiceApi.Controllers
 {
@@ -9,79 +10,68 @@ namespace CarServiceApi.Controllers
     [ApiController]
     public class ServiceLogController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServiceLogService _serviceLogService;
 
-        public ServiceLogController(ApplicationDbContext context)
+        public ServiceLogController(IServiceLogService serviceLogService)
         {
-            _context = context;
+            _serviceLogService = serviceLogService;
         }
+
+
 
         [HttpPost("add")]
-        public IActionResult AddServiceLog(ServiceLogCreateDto request)
+        public async Task<IActionResult> AddServiceLog(ServiceLogCreateDto request)
         {
-            var vehicleExists = _context.Vehicles.Any(v => v.Id == request.VehicleId);
-            if (!vehicleExists)
+            try
             {
-                return NotFound("The specified vehicle was not found.");
+                await _serviceLogService.AddServiceLogAsync(request);
+                return Ok("Service log successfully added!");
             }
-
-            var serviceLog = new ServiceLog
+            catch (KeyNotFoundException ex)
             {
-                VehicleId = request.VehicleId,
-                Date = request.Date,
-                CarKmCount = request.CarKmCount,
-                ServiceDescription = request.ServiceDescription,
-                ServiceCost = request.ServiceCost
-            };
-
-            _context.ServiceLogs.Add(serviceLog);
-            _context.SaveChanges();
-
-            return Ok("Service log successfully added!");
+                return NotFound(ex.Message);
+            }
         }
 
-        [HttpGet("vehicle/{vehicleId}")]
-        public IActionResult GetServiceLogsForVehicle(int vehicleId)
-        {
-            var logs = _context.ServiceLogs
-                .Where(s => s.VehicleId == vehicleId)
-                .OrderByDescending(s => s.Date)
-                .Select(s => new
-                {
-                    s.Id,
-                    s.Date,
-                    s.CarKmCount,
-                    s.ServiceDescription,
-                    s.ServiceCost
-                }).ToList();
 
+
+        [HttpGet("vehicle/{vehicleId}")]
+        public async Task<IActionResult> GetServiceLogsForVehicle(int vehicleId)
+        {
+            var logs = await _serviceLogService.GetServiceLogsForVehicleAsync(vehicleId);
             return Ok(logs);
         }
 
+
+
         [HttpPut("update/{id}")]
-        public IActionResult UpdateServiceLog(int id, ServiceLogCreateDto request)
+        public async Task<IActionResult> UpdateServiceLog(int id, ServiceLogCreateDto request)
         {
-            var log = _context.ServiceLogs.Find(id);
-            if (log == null) return NotFound("Service log not found.");
-
-            log.Date = request.Date;
-            log.CarKmCount = request.CarKmCount;
-            log.ServiceDescription = request.ServiceDescription;
-            log.ServiceCost = request.ServiceCost;
-
-            _context.SaveChanges();
-            return Ok("Service log successfully updated!");
+            try
+            {
+                await _serviceLogService.UpdateServiceLogAsync(id, request);
+                return Ok("Service log successfully updated!");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
-        [HttpDelete("delete/{id}")]
-        public IActionResult DeleteServiceLog(int id)
-        {
-            var log = _context.ServiceLogs.Find(id);
-            if (log == null) return NotFound("Service log not found.");
 
-            _context.ServiceLogs.Remove(log);
-            _context.SaveChanges();
-            return Ok("Service log successfully deleted!");
+
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteServiceLog(int id)
+        {
+            try
+            {
+                _serviceLogService.DeleteServiceLogAsync(id);
+                return Ok("Service log successfully deleted!");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }
