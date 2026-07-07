@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CarServiceApi.Data;
-using CarServiceApi.Models;
 using CarServiceApi.DTOs;
 using CarServiceApi.Services;
 
