@@ -3,6 +3,7 @@ using CarServiceApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +32,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your token!"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -71,8 +98,21 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-
         context.Database.EnsureCreated();
+
+        if (!context.Users.Any(u => u.Role == "Admin"))
+        {
+            var adminUser = new CarServiceApi.Models.User
+            {
+                Username = "admin",
+                Email = "admin@gmail.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin"),
+                Role = "Admin"
+            };
+
+            context.Users.Add(adminUser);
+            context.SaveChanges();
+        }
     }
     catch (Exception ex)
     {
@@ -80,4 +120,5 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Error, while initializing the database.");
     }
 }
-app.Run();
+
+app.Run(); 
