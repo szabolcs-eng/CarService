@@ -1,5 +1,6 @@
 using CarServiceApi.Data;
 using CarServiceApi.Services;
+using CarServiceApi.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<CarServiceApi.Validators.UserRegisterDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterDtoValidator>();
 
 builder.Services.AddScoped<IFuelLogService, FuelLogService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
