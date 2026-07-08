@@ -1,12 +1,14 @@
 ﻿using CarServiceApi.DTOs;
 using CarServiceApi.Filters;
 using CarServiceApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarServiceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FuelLogController : ControllerBase
     {
 
