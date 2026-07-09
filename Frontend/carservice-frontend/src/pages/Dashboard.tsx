@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 interface Vehicle {
   id: number;
@@ -35,13 +35,13 @@ export default function Dashboard() {
   };
 
   const userId = getUserIdFromToken();
-  const API_BASE_URL = 'http://localhost:8080/api/Vehicle';
 
   const fetchVehicles = async () => {
     if (!userId) return;
     try {
-      const response = await axios.get(`${API_BASE_URL}/user-vehicles/${userId}`);
-      setVehicles(response.data);
+      const response = await api.get(`/Vehicle/user-vehicles/${userId}`);
+      
+      setVehicles(response.data.data || response.data); 
     } catch (err) {
       setError('Vehicle list fetch failed. Please check the backend!');
     }
@@ -62,7 +62,8 @@ export default function Dashboard() {
     if (!userId) return;
 
     try {
-      await axios.post(`${API_BASE_URL}/add`, {
+      // Új API hívás
+      await api.post(`/Vehicle/add`, {
         userId: userId,
         licensePlate: licensePlate,
         brand: brand,
@@ -85,6 +86,7 @@ export default function Dashboard() {
     localStorage.removeItem('token');
     navigate('/login');
   };
+
 
   return (
     <div>

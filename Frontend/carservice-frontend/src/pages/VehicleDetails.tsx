@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 
 interface FuelLog {
   id: number;
@@ -45,13 +45,11 @@ export default function VehicleDetails() {
   const [serviceDesc, setServiceDesc] = useState('');
   const [serviceCost, setServiceCost] = useState<number | ''>('');
 
-  const API_BASE_URL = 'http://localhost:8080/api';
-
   const fetchLogs = async () => {
     try {
       const [fuelRes, serviceRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/FuelLog/vehicle/${id}`),
-        axios.get(`${API_BASE_URL}/ServiceLog/vehicle/${id}`)
+        api.get(`/FuelLog/vehicle/${id}`),
+        api.get(`/ServiceLog/vehicle/${id}`)
       ]);
       setFuelLogs(fuelRes.data);
       setServiceLogs(serviceRes.data);
@@ -62,7 +60,7 @@ export default function VehicleDetails() {
 
   const fetchAverageConsumption = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/FuelLog/vehicle/${id}/average-consumption`);
+      const response = await api.get(`/FuelLog/vehicle/${id}/average-consumption`);
       setAvgConsumption(response.data);
       setAvgError(''); 
     } catch (err: any) {
@@ -87,7 +85,7 @@ export default function VehicleDetails() {
   const handleAddFuel = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/FuelLog/add`, {
+      await api.post('/FuelLog/add', {
         vehicleId: Number(id),
         date: fuelDate,
         carKmCount: Number(fuelKm),
@@ -106,7 +104,7 @@ export default function VehicleDetails() {
   const handleAddService = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/ServiceLog/add`, {
+      await api.post('/ServiceLog/add', {
         vehicleId: Number(id),
         date: serviceDate,
         carKmCount: Number(serviceKm),
