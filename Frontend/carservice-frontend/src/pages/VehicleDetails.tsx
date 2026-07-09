@@ -51,8 +51,10 @@ export default function VehicleDetails() {
         api.get(`/FuelLog/vehicle/${id}`),
         api.get(`/ServiceLog/vehicle/${id}`)
       ]);
-      setFuelLogs(fuelRes.data);
-      setServiceLogs(serviceRes.data);
+      
+      setFuelLogs(fuelRes.data.data || fuelRes.data || []);
+      setServiceLogs(serviceRes.data.data || serviceRes.data || []);
+      
     } catch (err) {
       setError('Error fetching logs. Please check the backend!');
     }
@@ -166,7 +168,7 @@ export default function VehicleDetails() {
             </div>
 
             <ul className="list-group shadow-sm">
-              {fuelLogs.map(log => (
+              {fuelLogs?.map(log => (
                 <li key={log.id} className="list-group-item d-flex justify-content-between align-items-center">
                   <div>
                     <strong>{new Date(log.date).toLocaleDateString()}</strong> - {log.carKmCount} km
@@ -193,7 +195,7 @@ export default function VehicleDetails() {
             </div>
 
             <ul className="list-group shadow-sm">
-              {serviceLogs.map(log => (
+              {serviceLogs?.map(log => (
                 <li key={log.id} className="list-group-item d-flex justify-content-between align-items-center">
                   <div>
                     <strong>{new Date(log.date).toLocaleDateString()}</strong> - {log.carKmCount} km
