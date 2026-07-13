@@ -50,7 +50,7 @@ namespace CarServiceApi.Services
 
 
 
-        public async Task<PagedResponse<List<object>>> GetServiceLogsForVehicleAsync(int vehicleId, PaginationFilter filter)
+        public async Task<PagedResponse<List<ServiceLogResponseDto>>> GetServiceLogsForVehicleAsync(int vehicleId, PaginationFilter filter)
         {
             var query = _context.ServiceLogs
                 .AsNoTracking()
@@ -78,7 +78,7 @@ namespace CarServiceApi.Services
 
             var data = logs.Cast<object>().ToList();
 
-            return new PagedResponse<List<object>>(data, filter.PageNumber, filter.PageSize, totalRecords);
+            return new PagedResponse<List<ServiceLogResponseDto>>(data, filter.PageNumber, filter.PageSize, totalRecords);
         }
 
 

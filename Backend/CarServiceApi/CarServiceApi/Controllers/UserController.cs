@@ -1,7 +1,7 @@
-﻿using CarServiceApi.Data;
+﻿using CarServiceApi.Filters;
+using CarServiceApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CarServiceApi.Controllers
 {
@@ -10,28 +10,18 @@ namespace CarServiceApi.Controllers
     [Authorize(Roles = "Admin")]
     public class UserController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public UserController(ApplicationDbContext context)
+        public UserController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers(PaginationFilter filter)
         {
-            var users = await _context.Users
-                .AsNoTracking()
-                .Select(u => new
-                {
-                    u.Id,
-                    u.Username,
-                    u.Email,
-                    u.Role
-                })
-                .ToListAsync();
-
-            return Ok(users);
+            var response = await _userService.GetAllUsersAsync(filter);
+            return Ok(response);
         }
     }
 }

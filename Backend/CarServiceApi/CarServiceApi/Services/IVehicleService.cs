@@ -7,7 +7,7 @@ namespace CarServiceApi.Services
     public interface IVehicleService
     {
         Task AddVehicleAsync(VehicleCreateDto request);
-        Task<PagedResponse<List<object>>> GetUserVehiclesAsync(int userId, PaginationFilter filter);
+        Task<PagedResponse<List<VehicleResponseDto>>> GetUserVehiclesAsync(int userId, PaginationFilter filter);
         Task UpdateVehicleAsync(int vehicleId, VehicleCreateDto request);
         Task DeleteVehicleAsync(int vehicleId);
     }

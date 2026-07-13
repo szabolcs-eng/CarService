@@ -17,7 +17,7 @@ namespace CarServiceApi.Validators
                 .InclusiveBetween(0, 2000000).WithMessage("Invalid odometer reading!");
 
             RuleFor(x => x.FuelAmount)
-                .InclusiveBetween(1, 200).WithMessage("Invalid fuel amount!");
+                .InclusiveBetween(0.1, 200.0).WithMessage("Invalid fuel amount!");
 
             RuleFor(x => x.FuelCost)
                 .InclusiveBetween(0, 1000000).WithMessage("Invalid cost amount!");
