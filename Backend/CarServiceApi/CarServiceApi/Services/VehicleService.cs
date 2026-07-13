@@ -78,7 +78,7 @@ namespace CarServiceApi.Services
                     v.Year
                 }).ToListAsync();
 
-            var data = vehicles.Cast<object>().ToList();
+            var data = vehicles.Cast<VehicleResponseDto>().ToList();
 
             return new PagedResponse<List<VehicleResponseDto>>(data, filter.PageNumber, filter.PageSize, totalRecords);
         }

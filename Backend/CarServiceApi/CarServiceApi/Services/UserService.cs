@@ -36,7 +36,7 @@ namespace CarServiceApi.Services
                 })
                 .ToListAsync();
 
-            var data = users.Cast<object>().ToList();
+            var data = users.Cast<UserResponseDto>().ToList();
 
             return new PagedResponse<List<UserResponseDto>>(data, filter.PageNumber, filter.PageSize, totalRecords);
         }
