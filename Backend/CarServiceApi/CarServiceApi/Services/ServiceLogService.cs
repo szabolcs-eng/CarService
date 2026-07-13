@@ -76,7 +76,7 @@ namespace CarServiceApi.Services
                     s.ServiceCost
                 }).ToListAsync();
 
-            var data = logs.Cast<object>().ToList();
+            var data = logs.Cast<ServiceLogResponseDto>().ToList();
 
             return new PagedResponse<List<ServiceLogResponseDto>>(data, filter.PageNumber, filter.PageSize, totalRecords);
         }

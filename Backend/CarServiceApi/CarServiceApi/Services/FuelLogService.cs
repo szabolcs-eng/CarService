@@ -100,7 +100,7 @@ namespace CarServiceApi.Services
                     s.FuelCost
                 }).ToListAsync();
 
-            var data = logs.Cast<object>().ToList();
+            var data = logs.Cast<FuelLogResponseDto>().ToList();
 
             return new PagedResponse<List<FuelLogResponseDto>>(data, filter.PageNumber, filter.PageSize, totalRecords);
         }
