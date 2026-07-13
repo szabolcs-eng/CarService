@@ -1,11 +1,11 @@
 ﻿namespace CarServiceApi.DTOs
 {
-    public class FuelLogCreateDto
+    public record FuelLogCreateDto
     {
         public int VehicleId { get; set; }
         public DateTime Date { get; set; }
         public int CarKmCount { get; set; }
-        public int FuelAmount { get; set; }
-        public int FuelCost { get; set; }
+        public double FuelAmount { get; set; }
+        public decimal FuelCost { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace CarServiceApi.DTOs
 {
-    public class VehicleCreateDto
+    public record VehicleCreateDto
     {
         public int UserId { get; set; }
         public string LicensePlate { get; set; } = string.Empty;
