@@ -2,47 +2,45 @@
 
 A comprehensive Full-Stack web application designed to help car owners track their vehicle expenses, fuel logs, and maintenance history in one clean, transparent platform.
 
-This project demonstrates the seamless integration of a modern, type-safe client-side interface (React + TypeScript) with a robust, scalable backend (ASP.NET Core REST API).
+This project demonstrates the seamless integration of a modern, type-safe client-side interface (React + TypeScript) with a robust, scalable backend (ASP.NET Core REST API), fully containerized and deployed to the cloud.
+
+## 🌐 Try it out! (Live Demo)
+You can easily test the application without downloading or installing anything. Just click the links below:
+
+* **Frontend Application (User Interface):** [https://carserviceapp-6w30.onrender.com](https://carserviceapp-6w30.onrender.com)
+* **Backend API (Swagger UI):** [https://carserviceapi-app.onrender.com/swagger](https://carserviceapi-app.onrender.com/swagger)
+
+> **⚠️ Cloud Hosting Note:** This project is hosted on Render's free tier. If the application hasn't been used for 15 minutes, the backend will go to sleep. **The first login or request might take ~50 seconds while the server wakes up.** Additionally, the current SQLite database is reset upon server restart, so test data may be cleared periodically.
 
 ## ✨ Key Features
 
-* 🔐 **Secure Authentication:** User registration and login featuring password hashing (BCrypt) and JWT (JSON Web Token) based session management.
+* 🔐 **Secure Authentication:** User registration and login featuring password hashing and JWT (JSON Web Token) based session management.
 * 🚘 **Vehicle Management:** Register and track multiple user-specific vehicles (by Brand, Model, License Plate, and Year).
 * ⛽ **Fuel Logs & Statistics:** Log refueling events with dates, quantities, and costs. The system features a built-in algorithm that automatically calculates the vehicle's **average consumption (L/100km)** based on logged odometer readings.
-* 🔧 **Service History:** Keep a precise, documented record of maintenance, repairs, and associated costs.
+* 🛡️ **Advanced Data Validation:** Robust backend validation using **FluentValidation** to ensure data integrity before it reaches the database.
+* 📄 **Pagination:** Efficient data handling with backend pagination for lists and logs, parsed seamlessly by the frontend.
 * 📱 **Responsive UI:** A clean, fast, and mobile-friendly user experience powered by Bootstrap 5.
 
 ## 🛠️ Tech Stack
 
-The project is built on modern industry standards, maintaining a strict separation of concerns between the frontend and backend layers:
+The project is built on modern industry standards, maintaining a strict **Clean Architecture** and separation of concerns:
 
 **Frontend (Client-Side):**
 * **Framework:** React (Powered by Vite for maximum performance)
-* **Language:** TypeScript (Ensuring strict type safety and reducing runtime errors)
-* **Routing & Network:** React Router DOM (SPA navigation), Axios (HTTP API requests)
+* **Language:** TypeScript (Ensuring strict type safety)
+* **Routing & Network:** React Router DOM (SPA navigation), **Axios with Interceptors** (for automatic JWT injection)
 * **Styling:** Bootstrap 5, Custom CSS
 
 **Backend (Server-Side):**
-* **Framework:** C# / .NET (ASP.NET Core Web API)
-* **Database & ORM:** SQL Server / SQLite, Entity Framework Core (Code-First approach)
-* **Security:** JWT Bearer Token authentication, BCrypt password encryption, CORS policies
+* **Framework:** C# / .NET 10 (ASP.NET Core Web API)
+* **Architecture:** Clean Architecture principles
+* **Database & ORM:** SQLite, Entity Framework Core (Code-First approach)
+* **Security & Validation:** JWT Bearer Token, FluentValidation, CORS policies
 
-## 🚀 Getting Started (Local Development)
-
-To test the project locally, clone the repository and run both the backend and frontend servers by following these steps:
-
-### 1. Running the Backend
-1. Navigate to the backend directory (via Visual Studio or terminal).
-2. Run the database migrations in the Package Manager Console: `Update-Database`, or via CLI: `dotnet ef database update`.
-3. Start the server: `dotnet run`. The server will run on `https://localhost:7196` by default.
-
-### 2. Running the Frontend
-1. Open a new terminal and navigate to the frontend folder.
-2. Install the required dependencies:
-   `npm install`
-3. Start the Vite development server:
-   `npm run dev`
-4. Open your browser and navigate to the provided local URL (usually `http://localhost:5173/`).
+**DevOps & Infrastructure:**
+* **Containerization:** Docker (Multi-stage builds)
+* **Web Server:** Nginx (Configured for React SPA routing fallback)
+* **CI/CD & Hosting:** Continuous Deployment via Render Web Services
 
 ## 📸 Screenshots
 
