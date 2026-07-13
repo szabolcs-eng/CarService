@@ -20,6 +20,7 @@ builder.Services.AddScoped<IFuelLogService, FuelLogService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IServiceLogService, ServiceLogService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -90,11 +91,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); 
-
-app.UseAuthorization();
-
 app.UseCors("AllowAll");
+app.UseAuthentication(); 
+app.UseAuthorization();
 
 app.MapControllers();
 

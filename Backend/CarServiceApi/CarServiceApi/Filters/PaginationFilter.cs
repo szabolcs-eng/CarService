@@ -2,21 +2,29 @@
 {
     public class PaginationFilter
     {
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+        private int _pageNumber = 1;
+        private int _pageSize = 10;
+
+        public int PageNumber
+        {
+            get => _pageNumber;
+            set => _pageNumber = value < 1 ? 1 : value;
+        }
+
+        public int PageSize
+        {
+            get => _pageSize;
+            set => _pageSize = value > 50 ? 50 : value;
+        }
 
         public string? SearchTerm { get; set; }
 
-        public PaginationFilter()
-        {
-            PageNumber = 1;
-            PageSize = 10;
-        }
+        public PaginationFilter() { }
 
         public PaginationFilter(int pageNumber, int pageSize)
         {
-            PageNumber = pageNumber < 1 ? 1 : pageNumber;
-            PageSize = pageSize > 50 ? 50 : pageSize;
+            PageNumber = pageNumber;
+            PageSize = pageSize;
         }
     }
 }
