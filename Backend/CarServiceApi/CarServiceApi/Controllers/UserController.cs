@@ -18,7 +18,7 @@ namespace CarServiceApi.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllUsers(PaginationFilter filter)
+        public async Task<IActionResult> GetAllUsers([FromQuery] PaginationFilter filter)
         {
             var response = await _userService.GetAllUsersAsync(filter);
             return Ok(response);
