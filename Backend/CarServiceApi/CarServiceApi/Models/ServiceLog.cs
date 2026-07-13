@@ -8,6 +8,6 @@
         public DateTime Date { get; set; }
         public int CarKmCount { get; set; }
         public string ServiceDescription { get; set; } = string.Empty;
-        public int ServiceCost { get; set; }
+        public decimal ServiceCost { get; set; }
     }
 }
