@@ -34,7 +34,7 @@ export default function Login() {
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 text-slate-100">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <h2 className="mt-4 text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-          Welcome to CarService 🚗
+          Welcome to CarService
         </h2>
         <p className="mt-2 text-sm text-slate-400">
           Sign in to access your vehicle profile and logs

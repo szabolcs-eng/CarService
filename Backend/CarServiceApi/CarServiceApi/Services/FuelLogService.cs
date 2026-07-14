@@ -91,18 +91,16 @@ namespace CarServiceApi.Services
                 .OrderByDescending(s => s.Date)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
-                .Select(s => new
-                {
+                .Select(s => new FuelLogResponseDto(
                     s.Id,
+                    s.VehicleId,
                     s.Date,
                     s.CarKmCount,
                     s.FuelAmount,
                     s.FuelCost
-                }).ToListAsync();
+                )).ToListAsync();
 
-            var data = logs.Cast<FuelLogResponseDto>().ToList();
-
-            return new PagedResponse<List<FuelLogResponseDto>>(data, filter.PageNumber, filter.PageSize, totalRecords);
+            return new PagedResponse<List<FuelLogResponseDto>>(logs, filter.PageNumber, filter.PageSize, totalRecords);
         }
 
 

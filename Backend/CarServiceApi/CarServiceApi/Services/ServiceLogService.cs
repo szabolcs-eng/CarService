@@ -66,19 +66,17 @@ namespace CarServiceApi.Services
             var logs = await query
                 .OrderByDescending(s => s.Date)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
-                .Take(filter.PageSize) 
-                .Select(s => new
-                {
+                .Take(filter.PageSize)
+                .Select(s => new ServiceLogResponseDto(
                     s.Id,
+                    s.VehicleId,
                     s.Date,
                     s.CarKmCount,
                     s.ServiceDescription,
                     s.ServiceCost
-                }).ToListAsync();
+                )).ToListAsync();
 
-            var data = logs.Cast<ServiceLogResponseDto>().ToList();
-
-            return new PagedResponse<List<ServiceLogResponseDto>>(data, filter.PageNumber, filter.PageSize, totalRecords);
+            return new PagedResponse<List<ServiceLogResponseDto>>(logs, filter.PageNumber, filter.PageSize, totalRecords);
         }
 
 

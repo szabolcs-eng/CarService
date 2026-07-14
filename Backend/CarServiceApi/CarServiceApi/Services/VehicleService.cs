@@ -69,18 +69,16 @@ namespace CarServiceApi.Services
                 .OrderBy(v => v.Brand).ThenBy(v => v.Model)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
-                .Select(v => new
-                {
+                .Select(v => new VehicleResponseDto(
                     v.Id,
+                    v.UserId,
                     v.LicensePlate,
                     v.Brand,
                     v.Model,
                     v.Year
-                }).ToListAsync();
+                )).ToListAsync();
 
-            var data = vehicles.Cast<VehicleResponseDto>().ToList();
-
-            return new PagedResponse<List<VehicleResponseDto>>(data, filter.PageNumber, filter.PageSize, totalRecords);
+            return new PagedResponse<List<VehicleResponseDto>>(vehicles, filter.PageNumber, filter.PageSize, totalRecords);
         }
 
 
