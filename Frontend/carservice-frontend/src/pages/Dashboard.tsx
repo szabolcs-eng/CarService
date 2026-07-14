@@ -40,7 +40,6 @@ export default function Dashboard() {
     if (!userId) return;
     try {
       const response = await api.get(`/Vehicle/user-vehicles/${userId}`);
-      
       setVehicles(response.data.data || response.data); 
     } catch (err) {
       setError('Vehicle list fetch failed. Please check the backend!');
@@ -58,11 +57,9 @@ export default function Dashboard() {
   const handleAddVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
     if (!userId) return;
 
     try {
-      // Új API hívás
       await api.post(`/Vehicle/add`, {
         userId: userId,
         licensePlate: licensePlate,
@@ -75,7 +72,6 @@ export default function Dashboard() {
       setModel('');
       setLicensePlate('');
       setYear(new Date().getFullYear());
-
       fetchVehicles();
     } catch (err) {
       setError('Failed to add the vehicle. Please check the backend!');
@@ -87,77 +83,130 @@ export default function Dashboard() {
     navigate('/login');
   };
 
-
   return (
-    <div>
-      <nav className="navbar navbar-dark bg-primary shadow-sm mb-4">
-        <div className="container">
-          <span className="navbar-brand mb-0 h1">🚗 CarService</span>
-          <button className="btn btn-outline-light btn-sm bg-danger" onClick={handleLogout}>
-            Logout
+    <div className="min-h-screen bg-slate-950 text-slate-100 pb-12">
+      {/* Navbar */}
+      <nav className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🚗</span>
+            <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+              CarService Dashboard
+            </span>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all duration-200"
+          >
+            Sign Out
           </button>
         </div>
       </nav>
 
-      <div className="container">
-        {error && <div className="alert alert-danger">{error}</div>}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        {error && (
+          <div className="mb-6 bg-red-950/50 border border-red-500/50 text-red-300 px-4 py-3 rounded-xl text-sm">
+            ⚠️ {error}
+          </div>
+        )}
 
-        <div className="row">
-          <div className="col-md-4 mb-4">
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h4 className="card-title text-primary mb-3">New Vehicle</h4>
-                <form onSubmit={handleAddVehicle}>
-                  <div className="mb-2">
-                    <label className="form-label small">Brand</label>
-                    <input type="text" className="form-control form-control-sm" placeholder="e.g., Ford" value={brand} onChange={(e) => setBrand(e.target.value)} required />
-                  </div>
-                  <div className="mb-2">
-                    <label className="form-label small">Model</label>
-                    <input type="text" className="form-control form-control-sm" placeholder="e.g., Focus" value={model} onChange={(e) => setModel(e.target.value)} required />
-                  </div>
-                  <div className="mb-2">
-                    <label className="form-label small">License Plate</label>
-                    <input type="text" className="form-control form-control-sm" placeholder="e.g., ABC-123" value={licensePlate} onChange={(e) => setLicensePlate(e.target.value)} required />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label small">Year</label>
-                    <input type="number" className="form-control form-control-sm" value={year} onChange={(e) => setYear(parseInt(e.target.value))} required min={1900}/>
-                  </div>
-                  <button type="submit" className="btn btn-success btn-sm w-100">Save to Profile</button>
-                </form>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left Column: Add Vehicle Form */}
+          <div className="lg:col-span-1">
+            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl sticky top-24">
+              <h4 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
+                <span>➕</span> Add New Vehicle
+              </h4>
+              <form onSubmit={handleAddVehicle} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Brand</label>
+                  <input 
+                    type="text" required placeholder="e.g., Toyota" value={brand} onChange={(e) => setBrand(e.target.value)} 
+                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Model</label>
+                  <input 
+                    type="text" required placeholder="e.g., Corolla" value={model} onChange={(e) => setModel(e.target.value)} 
+                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">License Plate</label>
+                  <input 
+                    type="text" required placeholder="e.g., ABC-123" value={licensePlate} onChange={(e) => setLicensePlate(e.target.value)} 
+                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Manufacturing Year</label>
+                  <input 
+                    type="number" required min={1900} value={year} onChange={(e) => setYear(parseInt(e.target.value))} 
+                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  className="w-full py-3 mt-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-900/20 transition-all duration-200"
+                >
+                  Save to Profile
+                </button>
+              </form>
             </div>
           </div>
 
-          <div className="col-md-8">
-            <h3 className="mb-3">My Vehicles</h3>
+          {/* Right Column: Vehicle List */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-slate-200">My Garage ({vehicles.length})</h3>
+            </div>
+
             {vehicles.length === 0 ? (
-              <div className="alert alert-info">You don't have any vehicles registered yet. Add one from the panel on the left!</div>
+              <div className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-12 text-center text-slate-400">
+                <span className="text-5xl block mb-3">🛠️</span>
+                <p className="text-lg font-medium text-slate-300">Your garage is empty</p>
+                <p className="text-sm mt-1">Use the panel on the left to add your first vehicle!</p>
+              </div>
             ) : (
-              <div className="row row-cols-1 row-cols-md-2 g-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {vehicles.map((vehicle) => (
-                  <div className="col" key={vehicle.id}>
-                    <div className="card h-100 border-start border-primary border-4 shadow-sm">
-                      <div className="card-body d-flex flex-column justify-content-between">
-                        <div>
-                          <div className="badge bg-secondary mb-2">{vehicle.licensePlate}</div>
-                          <h5 className="card-title mb-1">{vehicle.brand} {vehicle.model}</h5>
-                          <p className="text-muted small">Year: {vehicle.year}</p>
-                        </div>
-                        <button 
-                          className="btn btn-outline-primary btn-sm mt-3 w-100"
-                          onClick={() => navigate(`/vehicle/${vehicle.id}`)}
-                        >
-                          Details and Logs ➔
-                        </button>
+                  <div 
+                    key={vehicle.id} 
+                    className="group bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:bg-slate-900 hover:border-slate-700/80 transition-all duration-300 flex flex-col justify-between shadow-lg hover:shadow-xl hover:-translate-y-1"
+                  >
+                    <div>
+                      <div className="flex justify-between items-start mb-3">
+                        <span className="px-3 py-1 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono font-bold tracking-widest text-blue-400 uppercase shadow-inner">
+                          {vehicle.licensePlate}
+                        </span>
+                        <span className="text-xs font-semibold px-2.5 py-1 bg-slate-950 text-slate-400 rounded-full border border-slate-800">
+                          {vehicle.year}
+                        </span>
                       </div>
+                      <h5 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors duration-200">
+                        {vehicle.brand} {vehicle.model}
+                      </h5>
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                      <span className="text-xs text-slate-500 font-medium">Service & Fuel History</span>
+                      <button 
+                        onClick={() => navigate(`/vehicle/${vehicle.id}`)}
+                        className="px-4 py-2 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 text-xs font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-200 flex items-center gap-1"
+                      >
+                        <span>Open Logs</span>
+                        <span>➔</span>
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
+
         </div>
       </div>
     </div>
