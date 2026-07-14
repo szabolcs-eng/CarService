@@ -51,10 +51,8 @@ export default function VehicleDetails() {
         api.get(`/FuelLog/vehicle/${id}`),
         api.get(`/ServiceLog/vehicle/${id}`)
       ]);
-      
       setFuelLogs(fuelRes.data.data || fuelRes.data || []);
       setServiceLogs(serviceRes.data.data || serviceRes.data || []);
-      
     } catch (err) {
       setError('Error fetching logs. Please check the backend!');
     }
@@ -95,7 +93,6 @@ export default function VehicleDetails() {
         fuelCost: Number(fuelCost)
       });
       setFuelKm(''); setFuelAmount(''); setFuelCost('');
-      
       fetchLogs();
       fetchAverageConsumption();
     } catch (err) {
@@ -121,90 +118,187 @@ export default function VehicleDetails() {
   };
 
   return (
-    <div>
-      <nav className="navbar navbar-dark bg-secondary shadow-sm mb-4">
-        <div className="container">
-          <button className="btn btn-outline-light btn-sm" onClick={() => navigate('/dashboard')}>
-            ⬅ Back to Dashboard
+    <div className="min-h-screen bg-slate-950 text-slate-100 pb-16">
+      {/* Navbar */}
+      <nav className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <button 
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold border border-slate-700/50 transition-all duration-200"
+          >
+            <span>⬅</span>
+            <span>Back to Garage</span>
           </button>
-          <span className="navbar-brand mb-0 h1">Vehicle Details</span>
+          <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+            Vehicle Telemetry & Logs
+          </span>
+          <div className="w-20"></div> {/* Spacer for center alignment */}
         </div>
       </nav>
 
-      <div className="container">
-        {error && <div className="alert alert-danger">{error}</div>}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        {error && (
+          <div className="mb-6 bg-red-950/50 border border-red-500/50 text-red-300 px-4 py-3 rounded-xl text-sm">
+            ⚠️ {error}
+          </div>
+        )}
 
-        <div className="row">
-          <div className="col-md-6 mb-4">
-            <h4 className="text-success border-bottom pb-2 mb-3">⛽ Fuel Logs</h4>
-            
-            <div className="card shadow-sm border-success mb-3 bg-light">
-              <div className="card-body py-2 text-center">
-                <h6 className="text-success fw-bold mb-1">📊 Average Consumption Statistics</h6>
-                {avgConsumption ? (
-                  <div className="d-flex justify-content-around mt-2">
-                    <div><small className="text-muted d-block">Distance</small><strong>{avgConsumption.totalDistanceKm} km</strong></div>
-                    <div><small className="text-muted d-block">Consumption</small><strong>{avgConsumption.totalFuelUsedLiters} L</strong></div>
-                    <div><small className="text-muted d-block">Average</small><strong className="text-danger fs-5">{avgConsumption.averageConsumption} L/100km</strong></div>
-                  </div>
-                ) : (
-                  <p className="text-muted mb-0 mt-1 small">
-                    <i className="bi bi-info-circle"></i> {avgError || "At least 2 fuel logs are required for calculation."}
-                  </p>
-                )}
-              </div>
+        {/* Top Bento Banner: Average Consumption */}
+        <div className="mb-8 bg-gradient-to-r from-slate-900 via-slate-900 to-emerald-950/30 border border-emerald-500/30 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+          <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div>
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-mono uppercase tracking-widest">
+                Analytics Engine
+              </span>
+              <h3 className="text-2xl font-extrabold text-white mt-2">Average Fuel Consumption</h3>
+              <p className="text-sm text-slate-400">Calculated based on odometer differences between full refills</p>
             </div>
 
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <form onSubmit={handleAddFuel} className="row g-2">
-                  <div className="col-6"><input type="date" className="form-control form-control-sm" value={fuelDate} onChange={e => setFuelDate(e.target.value)} required /></div>
-                  <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Odometer Reading" value={fuelKm} onChange={e => setFuelKm(Number(e.target.value))} required /></div>
-                  <div className="col-6"><input type="number" step="0.1" className="form-control form-control-sm" placeholder="Quantity (Liters)" value={fuelAmount} onChange={e => setFuelAmount(Number(e.target.value))} required /></div>
-                  <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Cost (HUF)" value={fuelCost} onChange={e => setFuelCost(Number(e.target.value))} required /></div>
-                  <div className="col-12"><button type="submit" className="btn btn-success btn-sm w-100 mt-2">Add Fuel Log</button></div>
-                </form>
+            {avgConsumption ? (
+              <div className="grid grid-cols-3 gap-4 sm:gap-8 bg-slate-950/60 border border-slate-800/80 px-6 py-4 rounded-2xl backdrop-blur-md">
+                <div className="text-center">
+                  <span className="block text-xs text-slate-400 uppercase font-medium">Distance</span>
+                  <span className="text-lg sm:text-xl font-bold text-slate-200">{avgConsumption.totalDistanceKm} <small className="text-xs text-slate-500">km</small></span>
+                </div>
+                <div className="text-center border-x border-slate-800/80 px-2 sm:px-4">
+                  <span className="block text-xs text-slate-400 uppercase font-medium">Fuel Used</span>
+                  <span className="text-lg sm:text-xl font-bold text-slate-200">{avgConsumption.totalFuelUsedLiters} <small className="text-xs text-slate-500">L</small></span>
+                </div>
+                <div className="text-center">
+                  <span className="block text-xs text-emerald-400 uppercase font-bold">Average</span>
+                  <span className="text-xl sm:text-2xl font-extrabold text-emerald-400">{avgConsumption.averageConsumption} <small className="text-xs font-normal text-emerald-500">L/100km</small></span>
+                </div>
               </div>
+            ) : (
+              <div className="bg-slate-950/40 border border-slate-800/80 px-6 py-4 rounded-2xl flex items-center gap-3 text-sm text-slate-400">
+                <span className="text-xl">ℹ️</span>
+                <span>{avgError || "At least 2 fuel logs are required for calculation."}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 2-Column Bento Grid: Fuel & Service */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* LEFT COLUMN: FUEL LOGS */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+              <span className="text-2xl">⛽</span>
+              <h4 className="text-lg font-bold text-emerald-400">Fuel Refill Logs</h4>
             </div>
 
-            <ul className="list-group shadow-sm">
-              {fuelLogs?.map(log => (
-                <li key={log.id} className="list-group-item d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>{new Date(log.date).toLocaleDateString()}</strong> - {log.carKmCount} km
-                    <br/><small className="text-muted">{log.fuelAmount} L | {log.fuelCost} HUF</small>
+            {/* Add Fuel Form */}
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-lg">
+              <h5 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Add Refill Record</h5>
+              <form onSubmit={handleAddFuel} className="grid grid-cols-2 gap-3">
+                <div className="col-span-2 sm:col-span-1">
+                  <input type="date" required value={fuelDate} onChange={e => setFuelDate(e.target.value)} 
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <input type="number" required placeholder="Odometer (km)" value={fuelKm} onChange={e => setFuelKm(Number(e.target.value))} 
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+                </div>
+                <div className="col-span-1">
+                  <input type="number" step="0.1" required placeholder="Liters (L)" value={fuelAmount} onChange={e => setFuelAmount(Number(e.target.value))} 
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+                </div>
+                <div className="col-span-1">
+                  <input type="number" required placeholder="Cost (HUF)" value={fuelCost} onChange={e => setFuelCost(Number(e.target.value))} 
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+                </div>
+                <div className="col-span-2">
+                  <button type="submit" className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-md shadow-emerald-900/20 transition-all">
+                    + Add Fuel Record
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Fuel List */}
+            <div className="space-y-3">
+              {fuelLogs.length === 0 ? (
+                <p className="text-center text-sm text-slate-500 py-6">No fuel records logged yet.</p>
+              ) : (
+                fuelLogs?.map(log => (
+                  <div key={log.id} className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex items-center justify-between hover:border-slate-700/80 transition-colors">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold text-slate-200">{new Date(log.date).toLocaleDateString()}</span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 bg-slate-800 text-slate-400 rounded-md border border-slate-700/50">{log.carKmCount} km</span>
+                      </div>
+                      <span className="text-sm font-semibold text-emerald-400">{log.fuelAmount} Liters</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-sm font-bold text-slate-200">{log.fuelCost.toLocaleString()}</span>
+                      <span className="text-xs text-slate-500 block">HUF</span>
+                    </div>
                   </div>
-                </li>
-              ))}
-            </ul>
+                ))
+              )}
+            </div>
           </div>
 
-          <div className="col-md-6 mb-4">
-            <h4 className="text-warning border-bottom pb-2 mb-3">🔧 Service Logs</h4>
-            
-            <div className="card shadow-sm mb-4">
-              <div className="card-body">
-                <form onSubmit={handleAddService} className="row g-2">
-                  <div className="col-6"><input type="date" className="form-control form-control-sm" value={serviceDate} onChange={e => setServiceDate(e.target.value)} required /></div>
-                  <div className="col-6"><input type="number" className="form-control form-control-sm" placeholder="Odometer Reading" value={serviceKm} onChange={e => setServiceKm(Number(e.target.value))} required /></div>
-                  <div className="col-12"><input type="text" className="form-control form-control-sm" placeholder="Service description (e.g., Oil Change)" value={serviceDesc} onChange={e => setServiceDesc(e.target.value)} required /></div>
-                  <div className="col-12"><input type="number" className="form-control form-control-sm" placeholder="Cost (HUF)" value={serviceCost} onChange={e => setServiceCost(Number(e.target.value))} required /></div>
-                  <div className="col-12"><button type="submit" className="btn btn-warning btn-sm w-100 mt-2">Add Service Log</button></div>
-                </form>
-              </div>
+          {/* RIGHT COLUMN: SERVICE LOGS */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+              <span className="text-2xl">🔧</span>
+              <h4 className="text-lg font-bold text-amber-400">Maintenance & Service Logs</h4>
             </div>
 
-            <ul className="list-group shadow-sm">
-              {serviceLogs?.map(log => (
-                <li key={log.id} className="list-group-item d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>{new Date(log.date).toLocaleDateString()}</strong> - {log.carKmCount} km
-                    <br/><span>{log.serviceDescription}</span>
-                    <br/><small className="text-muted">{log.serviceCost} HUF</small>
+            {/* Add Service Form */}
+            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-lg">
+              <h5 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Add Service Record</h5>
+              <form onSubmit={handleAddService} className="grid grid-cols-2 gap-3">
+                <div className="col-span-2 sm:col-span-1">
+                  <input type="date" required value={serviceDate} onChange={e => setServiceDate(e.target.value)} 
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500" />
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <input type="number" required placeholder="Odometer (km)" value={serviceKm} onChange={e => setServiceKm(Number(e.target.value))} 
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500" />
+                </div>
+                <div className="col-span-2">
+                  <input type="text" required placeholder="Description (e.g., Oil Change & Brake Pads)" value={serviceDesc} onChange={e => setServiceDesc(e.target.value)} 
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500" />
+                </div>
+                <div className="col-span-2">
+                  <input type="number" required placeholder="Total Cost (HUF)" value={serviceCost} onChange={e => setServiceCost(Number(e.target.value))} 
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500" />
+                </div>
+                <div className="col-span-2">
+                  <button type="submit" className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 shadow-md shadow-amber-900/20 transition-all">
+                    + Add Maintenance Record
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Service List */}
+            <div className="space-y-3">
+              {serviceLogs.length === 0 ? (
+                <p className="text-center text-sm text-slate-500 py-6">No service records logged yet.</p>
+              ) : (
+                serviceLogs?.map(log => (
+                  <div key={log.id} className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex items-center justify-between hover:border-slate-700/80 transition-colors">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold text-slate-200">{new Date(log.date).toLocaleDateString()}</span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 bg-slate-800 text-slate-400 rounded-md border border-slate-700/50">{log.carKmCount} km</span>
+                      </div>
+                      <span className="text-sm font-medium text-slate-300 block">{log.serviceDescription}</span>
+                    </div>
+                    <div className="text-right shrink-0 ml-4">
+                      <span className="text-sm font-bold text-amber-400">{log.serviceCost.toLocaleString()}</span>
+                      <span className="text-xs text-slate-500 block">HUF</span>
+                    </div>
                   </div>
-                </li>
-              ))}
-            </ul>
+                ))
+              )}
+            </div>
           </div>
 
         </div>
