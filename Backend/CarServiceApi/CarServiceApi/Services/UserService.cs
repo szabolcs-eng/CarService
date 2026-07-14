@@ -27,18 +27,15 @@ namespace CarServiceApi.Services
                 .OrderBy(u => u.Id)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
-                .Select(u => new
-                {
+                .Select(u => new UserResponseDto(
                     u.Id,
                     u.Username,
                     u.Email,
                     u.Role
-                })
+                ))
                 .ToListAsync();
 
-            var data = users.Cast<UserResponseDto>().ToList();
-
-            return new PagedResponse<List<UserResponseDto>>(data, filter.PageNumber, filter.PageSize, totalRecords);
+            return new PagedResponse<List<UserResponseDto>>(users, filter.PageNumber, filter.PageSize, totalRecords);
         }
     }
 }

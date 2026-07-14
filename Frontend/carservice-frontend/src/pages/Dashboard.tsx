@@ -85,7 +85,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 pb-12">
-      {/* Navbar */}
       <nav className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-lg sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -103,7 +102,6 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         {error && (
           <div className="mb-6 bg-red-950/50 border border-red-500/50 text-red-300 px-4 py-3 rounded-xl text-sm">
@@ -113,7 +111,6 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* Left Column: Add Vehicle Form */}
           <div className="lg:col-span-1">
             <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl sticky top-24">
               <h4 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
@@ -158,7 +155,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Right Column: Vehicle List */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-slate-200">My Garage ({vehicles.length})</h3>
