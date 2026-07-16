@@ -14,10 +14,10 @@ You can easily test the application without downloading or installing anything. 
 
 ## ✨ Key Features
 
-* 🔐 **Secure Authentication:** User registration and login featuring BCrypt password hashing and JWT (JSON Web Token) based session management [source: 1].
-* 🚘 **Vehicle Management:** Register and track multiple user-specific vehicles by storing their Brand, Model, License Plate, and Year [source: 4].
-* ⛽ **Fuel Logs & Statistics:** Log refueling events with dates, quantities, and costs, while the system automatically calculates the vehicle's exact **average consumption (L/100km)** based on odometer progression [source: 2].
-* 🛠️ **Service & Maintenance Tracking:** Log detailed maintenance history, including service descriptions, exact costs, and odometer readings at the time of repair [source: 3].
+* 🔐 **Secure Authentication:** User registration and login featuring BCrypt password hashing and JWT (JSON Web Token) based session management.
+* 🚘 **Vehicle Management:** Register and track multiple user-specific vehicles by storing their Brand, Model, License Plate, and Year.
+* ⛽ **Fuel Logs & Statistics:** Log refueling events with dates, quantities, and costs, while the system automatically calculates the vehicle's exact **average consumption (L/100km)** based on odometer progression.
+* 🛠️ **Service & Maintenance Tracking:** Log detailed maintenance history, including service descriptions, exact costs, and odometer readings at the time of repair.
 * 🛡️ **Advanced Data Validation:** Robust backend validation using **FluentValidation** to guarantee strict data integrity before any database transaction occurs.
 * ⚡ **Modern & Responsive UI:** A lightning-fast, mobile-first user experience styled from the ground up using **Tailwind CSS v4**, providing a sleek and highly customizable visual interface.
 
@@ -25,13 +25,13 @@ You can easily test the application without downloading or installing anything. 
 
 The project is built on industry-standard technologies, strictly adhering to **Clean Architecture** principles and separation of concerns:
 
-**Frontend (Client-Side):**
+**Frontend:**
 * **Framework:** React (Powered by Vite for blazing-fast build times and HMR)
 * **Language:** TypeScript (Ensuring end-to-end type safety)
 * **Styling:** **Tailwind CSS v4** (Utility-first, modern responsive design)
 * **Routing & Network:** React Router DOM (SPA navigation), **Axios with Interceptors** (for automatic JWT Bearer token injection)
 
-**Backend (Server-Side):**
+**Backend:**
 * **Framework:** C# / .NET 10 (ASP.NET Core Web API)
 * **Architecture:** Clean Architecture principles with DTO pattern [source: 1, 2, 3, 4]
 * **Database & ORM:** SQLite, Entity Framework Core (Code-First approach) [source: 1, 2, 3, 4]
