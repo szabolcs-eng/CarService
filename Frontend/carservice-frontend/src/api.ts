@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://carserviceapi-app.onrender.com/api';
+const API_BASE_URL = 'https://carservice-api-hu-e8bnhmf9h9g2gwg8.polandcentral-01.azurewebsites.net/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
