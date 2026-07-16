@@ -33,9 +33,9 @@ The project is built on industry-standard technologies, strictly adhering to **C
 
 **Backend:**
 * **Framework:** C# / .NET 10 (ASP.NET Core Web API)
-* **Architecture:** Clean Architecture principles with DTO pattern [source: 1, 2, 3, 4]
-* **Database & ORM:** SQLite, Entity Framework Core (Code-First approach) [source: 1, 2, 3, 4]
-* **Security & Auth:** JWT Bearer Token validation, BCrypt password hashing, and custom CORS policies [source: 1]
+* **Architecture:** Clean Architecture principles with DTO pattern
+* **Database & ORM:** SQLite, Entity Framework Core (Code-First approach)
+* **Security & Auth:** JWT Bearer Token validation, BCrypt password hashing, and custom CORS policies
 
 **DevOps & Cloud Infrastructure:**
 * **Cloud Provider:** Microsoft Azure (Linux App Services for both Backend API and Frontend UI)
