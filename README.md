@@ -2,55 +2,55 @@
 
 A comprehensive Full-Stack web application designed to help car owners track their vehicle expenses, fuel logs, and maintenance history in one clean, transparent platform.
 
-This project demonstrates the seamless integration of a modern, type-safe client-side interface (React + TypeScript) with a robust, scalable backend (ASP.NET Core REST API), fully containerized and deployed to the cloud.
+This project demonstrates the seamless integration of a modern, type-safe client-side interface with a robust, scalable backend, fully automated with CI/CD pipelines and deployed to the Microsoft Azure cloud.
 
-## 🌐 Try it out! (Live Demo)
+## 🌐 Try it out!
 You can easily test the application without downloading or installing anything. Just click the links below:
 
-* **Frontend Application (User Interface):** [https://carserviceapp-6w30.onrender.com](https://carserviceapp-6w30.onrender.com)
-* **Backend API (Swagger UI):** [https://carserviceapi-app.onrender.com/swagger](https://carserviceapi-app.onrender.com/swagger)
+* **Frontend Application (User Interface):** [https://your-frontend-link.azurewebsites.net](https://carservice-app-szabolcs-eng-hu-hsc9bkhub3gvgahz.polandcentral-01.azurewebsites.net)
+* **Backend API (Swagger UI):** [https://your-backend-link.azurewebsites.net/swagger](https://carservice-api-hu-e8bnhmf9h9g2gwg8.polandcentral-01.azurewebsites.net/swagger)
 
-> **⚠️ Cloud Hosting Note:** This project is hosted on Render's free tier. If the application hasn't been used for 15 minutes, the backend will go to sleep. **The first login or request might take ~50 seconds while the server wakes up.** Additionally, the current SQLite database is reset upon server restart, so test data may be cleared periodically.
+> **☁️ Enterprise Cloud Hosting:** Unlike basic hobby projects hosted on sleeping free tiers, this application is deployed on **Microsoft Azure Linux App Services** with **Always On** enabled. Both the .NET 10 API and the Node/Vite SPA frontend deliver instant, zero-latency responses 24/7, powered by continuous deployment workflows.
 
 ## ✨ Key Features
 
-* 🔐 **Secure Authentication:** User registration and login featuring password hashing and JWT (JSON Web Token) based session management.
-* 🚘 **Vehicle Management:** Register and track multiple user-specific vehicles (by Brand, Model, License Plate, and Year).
-* ⛽ **Fuel Logs & Statistics:** Log refueling events with dates, quantities, and costs. The system features a built-in algorithm that automatically calculates the vehicle's **average consumption (L/100km)** based on logged odometer readings.
-* 🛡️ **Advanced Data Validation:** Robust backend validation using **FluentValidation** to ensure data integrity before it reaches the database.
-* 📄 **Pagination:** Efficient data handling with backend pagination for lists and logs, parsed seamlessly by the frontend.
-* 📱 **Responsive UI:** A clean, fast, and mobile-friendly user experience powered by Bootstrap 5.
+* 🔐 **Secure Authentication:** User registration and login featuring BCrypt password hashing and JWT (JSON Web Token) based session management [source: 1].
+* 🚘 **Vehicle Management:** Register and track multiple user-specific vehicles by storing their Brand, Model, License Plate, and Year [source: 4].
+* ⛽ **Fuel Logs & Statistics:** Log refueling events with dates, quantities, and costs, while the system automatically calculates the vehicle's exact **average consumption (L/100km)** based on odometer progression [source: 2].
+* 🛠️ **Service & Maintenance Tracking:** Log detailed maintenance history, including service descriptions, exact costs, and odometer readings at the time of repair [source: 3].
+* 🛡️ **Advanced Data Validation:** Robust backend validation using **FluentValidation** to guarantee strict data integrity before any database transaction occurs.
+* ⚡ **Modern & Responsive UI:** A lightning-fast, mobile-first user experience styled from the ground up using **Tailwind CSS v4**, providing a sleek and highly customizable visual interface.
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Architecture
 
-The project is built on modern industry standards, maintaining a strict **Clean Architecture** and separation of concerns:
+The project is built on industry-standard technologies, strictly adhering to **Clean Architecture** principles and separation of concerns:
 
 **Frontend (Client-Side):**
-* **Framework:** React (Powered by Vite for maximum performance)
-* **Language:** TypeScript (Ensuring strict type safety)
-* **Routing & Network:** React Router DOM (SPA navigation), **Axios with Interceptors** (for automatic JWT injection)
-* **Styling:** Bootstrap 5, Custom CSS
+* **Framework:** React (Powered by Vite for blazing-fast build times and HMR)
+* **Language:** TypeScript (Ensuring end-to-end type safety)
+* **Styling:** **Tailwind CSS v4** (Utility-first, modern responsive design)
+* **Routing & Network:** React Router DOM (SPA navigation), **Axios with Interceptors** (for automatic JWT Bearer token injection)
 
 **Backend (Server-Side):**
 * **Framework:** C# / .NET 10 (ASP.NET Core Web API)
-* **Architecture:** Clean Architecture principles
-* **Database & ORM:** SQLite, Entity Framework Core (Code-First approach)
-* **Security & Validation:** JWT Bearer Token, FluentValidation, CORS policies
+* **Architecture:** Clean Architecture principles with DTO pattern [source: 1, 2, 3, 4]
+* **Database & ORM:** SQLite, Entity Framework Core (Code-First approach) [source: 1, 2, 3, 4]
+* **Security & Auth:** JWT Bearer Token validation, BCrypt password hashing, and custom CORS policies [source: 1]
 
-**DevOps & Infrastructure:**
-* **Containerization:** Docker (Multi-stage builds)
-* **Web Server:** Nginx (Configured for React SPA routing fallback)
-* **CI/CD & Hosting:** Continuous Deployment via Render Web Services
+**DevOps & Cloud Infrastructure:**
+* **Cloud Provider:** Microsoft Azure (Linux App Services for both Backend API and Frontend UI)
+* **CI/CD Automation:** **GitHub Actions** (Automated build, test, and continuous deployment workflows triggered on main branch commits)
+* **Containerization & Process Management:** Docker multi-stage builds, PM2 / Nginx configured for seamless React Single Page Application (SPA) routing fallback
 
 ## 📸 Screenshots
 
 * **Login and Registration**
-<img width="1873" height="918" alt="Képernyőkép 2026-06-19 143553" src="https://github.com/user-attachments/assets/276d3336-b0c7-461f-9b5f-568133004eb3" />
+<img width="1866" height="924" alt="Képernyőkép 2026-07-16 084038" src="https://github.com/user-attachments/assets/3bfb0a4d-1189-42d1-b0ad-8d58214617dd" />
 
-<img width="1867" height="922" alt="Képernyőkép 2026-06-19 143621" src="https://github.com/user-attachments/assets/d6bb15d3-f23d-4a7a-adb1-516d79977d8c" />
+<img width="1862" height="920" alt="Képernyőkép 2026-07-16 084134" src="https://github.com/user-attachments/assets/22e222f3-9624-4041-8422-e70c15458b3d" />
 
 * **User Dashboard**
-<img width="1871" height="925" alt="Képernyőkép 2026-06-19 143702" src="https://github.com/user-attachments/assets/236c3dde-00f9-4476-bfdf-3dd7bd659f1d" />
+<img width="1870" height="921" alt="Képernyőkép 2026-07-16 084527" src="https://github.com/user-attachments/assets/32365a97-2b8a-421f-ac4c-e6a39ccb45ac" />
 
 * **Vehicle Details & Average Consumption**
-<img width="1877" height="915" alt="Képernyőkép 2026-06-19 143907" src="https://github.com/user-attachments/assets/0afdb9ab-5c5a-4f51-bac9-856b625c73a4" />
+<img width="1872" height="898" alt="Képernyőkép 2026-07-16 084749" src="https://github.com/user-attachments/assets/a082086a-d6e9-4647-b419-989e034bef66" />
