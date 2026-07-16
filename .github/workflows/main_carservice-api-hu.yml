@@ -10,6 +10,7 @@ on:
     paths-ignore:
       - '**.md'
       - '.gitignore'
+      - 'Frontend/**'
   workflow_dispatch:
 
 jobs:
