@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../api';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api";
 
 interface Vehicle {
   id: number;
@@ -12,22 +12,25 @@ interface Vehicle {
 
 export default function Dashboard() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const [brand, setBrand] = useState('');
-  const [model, setModel] = useState('');
-  const [licensePlate, setLicensePlate] = useState('');
+  const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
+  const [licensePlate, setLicensePlate] = useState("");
   const [year, setYear] = useState<number>(new Date().getFullYear());
 
   const getUserIdFromToken = (): number | null => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) return null;
     try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const payload = JSON.parse(window.atob(base64));
-      const userId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || payload["nameid"];
+      const userId =
+        payload[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+        ] || payload["nameid"];
       return userId ? parseInt(userId) : null;
     } catch (e) {
       return null;
@@ -40,15 +43,15 @@ export default function Dashboard() {
     if (!userId) return;
     try {
       const response = await api.get(`/Vehicle/user-vehicles/${userId}`);
-      setVehicles(response.data.data || response.data); 
+      setVehicles(response.data.data || response.data);
     } catch (err) {
-      setError('Vehicle list fetch failed. Please check the backend!');
+      setError("Vehicle list fetch failed. Please check the backend!");
     }
   };
 
   useEffect(() => {
-    if (!localStorage.getItem('token') || !userId) {
-      navigate('/login');
+    if (!localStorage.getItem("token") || !userId) {
+      navigate("/login");
     } else {
       fetchVehicles();
     }
@@ -56,7 +59,7 @@ export default function Dashboard() {
 
   const handleAddVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     if (!userId) return;
 
     try {
@@ -65,22 +68,22 @@ export default function Dashboard() {
         licensePlate: licensePlate,
         brand: brand,
         model: model,
-        year: year
+        year: year,
       });
 
-      setBrand('');
-      setModel('');
-      setLicensePlate('');
+      setBrand("");
+      setModel("");
+      setLicensePlate("");
       setYear(new Date().getFullYear());
       fetchVehicles();
     } catch (err) {
-      setError('Failed to add the vehicle. Please check the backend!');
+      setError("Failed to add the vehicle. Please check the backend!");
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
@@ -93,7 +96,7 @@ export default function Dashboard() {
               CarService Dashboard
             </span>
           </div>
-          <button 
+          <button
             onClick={handleLogout}
             className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all duration-200"
           >
@@ -110,7 +113,6 @@ export default function Dashboard() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
           <div className="lg:col-span-1">
             <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl sticky top-24">
               <h4 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
@@ -118,35 +120,59 @@ export default function Dashboard() {
               </h4>
               <form onSubmit={handleAddVehicle} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Brand</label>
-                  <input 
-                    type="text" required placeholder="e.g., Toyota" value={brand} onChange={(e) => setBrand(e.target.value)} 
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
+                    Brand
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g., Toyota"
+                    value={brand}
+                    onChange={(e) => setBrand(e.target.value)}
                     className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Model</label>
-                  <input 
-                    type="text" required placeholder="e.g., Corolla" value={model} onChange={(e) => setModel(e.target.value)} 
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
+                    Model
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g., Corolla"
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
                     className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">License Plate</label>
-                  <input 
-                    type="text" required placeholder="e.g., ABC-123" value={licensePlate} onChange={(e) => setLicensePlate(e.target.value)} 
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
+                    License Plate
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g., ABC-123"
+                    value={licensePlate}
+                    onChange={(e) => setLicensePlate(e.target.value)}
                     className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Manufacturing Year</label>
-                  <input 
-                    type="number" required min={1900} value={year} onChange={(e) => setYear(parseInt(e.target.value))} 
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
+                    Manufacturing Year
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={1900}
+                    value={year}
+                    onChange={(e) => setYear(parseInt(e.target.value))}
                     className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="w-full py-3 mt-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-900/20 transition-all duration-200"
                 >
                   Save to Profile
@@ -157,20 +183,26 @@ export default function Dashboard() {
 
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-slate-200">My Garage ({vehicles.length})</h3>
+              <h3 className="text-xl font-bold text-slate-200">
+                My Garage ({vehicles.length})
+              </h3>
             </div>
 
             {vehicles.length === 0 ? (
               <div className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-12 text-center text-slate-400">
                 <span className="text-5xl block mb-3">🛠️</span>
-                <p className="text-lg font-medium text-slate-300">Your garage is empty</p>
-                <p className="text-sm mt-1">Use the panel on the left to add your first vehicle!</p>
+                <p className="text-lg font-medium text-slate-300">
+                  Your garage is empty
+                </p>
+                <p className="text-sm mt-1">
+                  Use the panel on the left to add your first vehicle!
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {vehicles.map((vehicle) => (
-                  <div 
-                    key={vehicle.id} 
+                  <div
+                    key={vehicle.id}
                     className="group bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:bg-slate-900 hover:border-slate-700/80 transition-all duration-300 flex flex-col justify-between shadow-lg hover:shadow-xl hover:-translate-y-1"
                   >
                     <div>
@@ -187,11 +219,13 @@ export default function Dashboard() {
                       </h5>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                      <span className="text-xs text-slate-500 font-medium">Service & Fuel History</span>
-                      <button 
+                    <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-xs text-slate-500 font-medium">
+                        Service & Fuel History
+                      </span>
+                      <button
                         onClick={() => navigate(`/vehicle/${vehicle.id}`)}
-                        className="px-4 py-2 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 text-xs font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-200 flex items-center gap-1"
+                        className="px-4 py-2 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 text-xs font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-200 flex items-center gap-1 shrink-0"
                       >
                         <span>Open Logs</span>
                         <span>➔</span>
@@ -202,7 +236,6 @@ export default function Dashboard() {
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>
