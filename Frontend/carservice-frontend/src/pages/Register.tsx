@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
+import axios from 'axios';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -34,11 +35,15 @@ export default function Register() {
         navigate('/login');
       }, 2000);
 
-    } catch (err: any) {
-      if (err.response && err.response.data) {
-        setError(err.response.data);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err) && err.response?.data) {
+        setError(
+          typeof err.response.data === "string"
+            ? err.response.data
+            : "An error occurred.",
+        );
       } else {
-        setError('Network error occurred. Please check the backend!');
+        setError("Network error occurred. Please check the backend!");
       }
     }
   };

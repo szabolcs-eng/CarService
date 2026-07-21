@@ -1,31 +1,36 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import api from '../api';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import api from "../api";
+import axios from "axios";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); 
-  const navigate = useNavigate(); 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(''); 
+    setError("");
 
     try {
-      const response = await api.post('/Auth/login', {
+      const response = await api.post("/Auth/login", {
         email: email,
-        password: password
+        password: password,
       });
 
       const token = response.data;
-      localStorage.setItem('token', token);
-      navigate('/dashboard');
-    } catch (err: any) {
-      if (err.response && err.response.data) {
-        setError(err.response.data);
+      localStorage.setItem("token", token);
+      navigate("/dashboard");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err) && err.response?.data) {
+        setError(
+          typeof err.response.data === "string"
+            ? err.response.data
+            : "An error occurred.",
+        );
       } else {
-        setError('Network error occurred. Please check the backend!');
+        setError("Network error occurred. Please check the backend!");
       }
     }
   };
@@ -43,7 +48,6 @@ export default function Login() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-slate-900/80 backdrop-blur-md py-8 px-6 shadow-2xl rounded-2xl border border-slate-800 sm:px-10">
-          
           {error && (
             <div className="mb-4 bg-red-950/50 border border-red-500/50 text-red-300 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
               <span>⚠️</span>
@@ -53,11 +57,13 @@ export default function Login() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-medium text-slate-300">Email Address</label>
+              <label className="block text-sm font-medium text-slate-300">
+                Email Address
+              </label>
               <div className="mt-1">
-                <input 
-                  type="email" 
-                  required 
+                <input
+                  type="email"
+                  required
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -67,11 +73,13 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300">Password</label>
+              <label className="block text-sm font-medium text-slate-300">
+                Password
+              </label>
               <div className="mt-1">
-                <input 
-                  type="password" 
-                  required 
+                <input
+                  type="password"
+                  required
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -81,8 +89,8 @@ export default function Login() {
             </div>
 
             <div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="w-full flex justify-center py-3 px-4 rounded-xl shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-blue-500 transition-all duration-200"
               >
                 Sign In
@@ -91,12 +99,16 @@ export default function Login() {
           </form>
 
           <div className="mt-6 text-center border-t border-slate-800/80 pt-4">
-            <span className="text-sm text-slate-400">Don't have an account yet? </span>
-            <Link to="/register" className="text-sm font-medium text-blue-400 hover:text-blue-300 transition duration-150">
+            <span className="text-sm text-slate-400">
+              Don't have an account yet?{" "}
+            </span>
+            <Link
+              to="/register"
+              className="text-sm font-medium text-blue-400 hover:text-blue-300 transition duration-150"
+            >
               Register now!
             </Link>
           </div>
-
         </div>
       </div>
     </div>

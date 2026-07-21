@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
+import axios from "axios";
 
 interface FuelLog {
   id: number;
@@ -50,7 +51,10 @@ export default function VehicleDetails() {
   const [serviceDesc, setServiceDesc] = useState("");
   const [serviceCost, setServiceCost] = useState<number | "">("");
 
-  const fetchLogs = async () => {
+  const [editingFuelId, setEditingFuelId] = useState<number | null>(null);
+  const [editingServiceId, setEditingServiceId] = useState<number | null>(null);
+
+  const fetchLogs = useCallback(async () => {
     try {
       const [fuelRes, serviceRes] = await Promise.all([
         api.get(`/FuelLog/vehicle/${id}`),
@@ -61,20 +65,20 @@ export default function VehicleDetails() {
     } catch (err) {
       setError("Error fetching logs. Please check the backend!");
     }
-  };
+  }, [id]);
 
-  const fetchAverageConsumption = async () => {
+  const fetchAverageConsumption = useCallback(async () => {
     try {
       const response = await api.get(
         `/FuelLog/vehicle/${id}/average-consumption`,
       );
       setAvgConsumption(response.data);
       setAvgError("");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setAvgConsumption(null);
       if (
-        err.response &&
-        err.response.data &&
+        axios.isAxiosError(err) &&
+        err.response?.data &&
         typeof err.response.data === "string"
       ) {
         setAvgError(err.response.data);
@@ -84,7 +88,7 @@ export default function VehicleDetails() {
         );
       }
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     if (!localStorage.getItem("token")) {
@@ -93,45 +97,128 @@ export default function VehicleDetails() {
       fetchLogs();
       fetchAverageConsumption();
     }
-  }, [id]);
+  }, [id, navigate, fetchLogs, fetchAverageConsumption]);
 
   const handleAddFuel = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/FuelLog/add", {
+      const payload = {
         vehicleId: Number(id),
         date: fuelDate,
         carKmCount: Number(fuelKm),
         fuelAmount: Number(fuelAmount),
         fuelCost: Number(fuelCost),
-      });
+      };
+
+      if (editingFuelId !== null) {
+        // Frissítés[cite: 6]
+        await api.put(`/FuelLog/update/${editingFuelId}`, payload);
+        setEditingFuelId(null);
+      } else {
+        // Új hozzáadás[cite: 6]
+        await api.post("/FuelLog/add", payload);
+      }
+
       setFuelKm("");
       setFuelAmount("");
       setFuelCost("");
       fetchLogs();
       fetchAverageConsumption();
     } catch (err) {
-      setError("Error adding fuel log. Please check the backend!");
+      setError(
+        "Error occurred while saving fuel log. Please check the backend!",
+      );
     }
+  };
+
+  const handleDeleteFuel = async (logId: number) => {
+    if (!window.confirm("Are you sure you want to delete this fuel log?"))
+      return;
+    try {
+      await api.delete(`/FuelLog/delete/${logId}`);
+      fetchLogs();
+      fetchAverageConsumption();
+    } catch (err) {
+      setError(
+        "Error occurred while deleting fuel log. Please check the backend!",
+      );
+    }
+  };
+
+  const startEditingFuel = (log: FuelLog) => {
+    setEditingFuelId(log.id);
+    setFuelDate(log.date.split("T")[0]);
+    setFuelKm(log.carKmCount);
+    setFuelAmount(log.fuelAmount);
+    setFuelCost(log.fuelCost);
+  };
+
+  const cancelEditingFuel = () => {
+    setEditingFuelId(null);
+    setFuelDate(new Date().toISOString().split("T")[0]);
+    setFuelKm("");
+    setFuelAmount("");
+    setFuelCost("");
   };
 
   const handleAddService = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/ServiceLog/add", {
+      const payload = {
         vehicleId: Number(id),
         date: serviceDate,
         carKmCount: Number(serviceKm),
         serviceDescription: serviceDesc,
         serviceCost: Number(serviceCost),
-      });
+      };
+
+      if (editingServiceId !== null) {
+        // Frissítés[cite: 7]
+        await api.put(`/ServiceLog/update/${editingServiceId}`, payload);
+        setEditingServiceId(null);
+      } else {
+        // Új hozzáadás[cite: 7]
+        await api.post("/ServiceLog/add", payload);
+      }
+
       setServiceKm("");
       setServiceDesc("");
       setServiceCost("");
       fetchLogs();
     } catch (err) {
-      setError("Error adding service log. Please check the backend!");
+      setError(
+        "Error occurred while saving service log. Please check the backend!",
+      );
     }
+  };
+
+  const handleDeleteService = async (logId: number) => {
+    if (!window.confirm("Are you sure you want to delete this service log?"))
+      return;
+    try {
+      await api.delete(`/ServiceLog/delete/${logId}`);
+      fetchLogs();
+    } catch (err) {
+      setError(
+        "Error occurred while deleting service log. Please check the backend!",
+      );
+    }
+  };
+
+  const startEditingService = (log: ServiceLog) => {
+    setEditingServiceId(log.id);
+    setServiceDate(log.date.split("T")[0]);
+    setServiceKm(log.carKmCount);
+    setServiceDesc(log.serviceDescription);
+    setServiceCost(log.serviceCost);
+  };
+
+  const cancelEditingService = () => {
+    setEditingServiceId(null);
+    setServiceDate(new Date().toISOString().split("T")[0]);
+    setServiceKm("");
+    setServiceDesc("");
+    setServiceCost("");
   };
 
   return (
@@ -273,13 +360,28 @@ export default function VehicleDetails() {
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-2 flex gap-2">
                   <button
                     type="submit"
-                    className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-md shadow-emerald-900/20 transition-all"
+                    className={`flex-1 py-2.5 rounded-xl text-xs font-bold text-white shadow-md transition-all ${
+                      editingFuelId !== null
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500"
+                        : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500"
+                    }`}
                   >
-                    + Add Fuel Record
+                    {editingFuelId !== null
+                      ? "✏️ Update Fuel Record"
+                      : "+ Add Fuel Record"}
                   </button>
+                  {editingFuelId !== null && (
+                    <button
+                      type="button"
+                      onClick={cancelEditingFuel}
+                      className="px-3 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </div>
               </form>
             </div>
@@ -308,11 +410,31 @@ export default function VehicleDetails() {
                         {log.fuelAmount} Liters
                       </span>
                     </div>
-                    <div className="text-right">
-                      <span className="text-sm font-bold text-slate-200">
-                        {log.fuelCost.toLocaleString()}
-                      </span>
-                      <span className="text-xs text-slate-500 block">HUF</span>
+                    <div className="text-right shrink-0 flex items-center gap-3">
+                      <div>
+                        <span className="text-sm font-bold text-slate-200">
+                          {log.fuelCost.toLocaleString()}
+                        </span>
+                        <span className="text-xs text-slate-500 block">
+                          HUF
+                        </span>
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-1 border-l border-slate-800 pl-2">
+                        <button
+                          onClick={() => startEditingFuel(log)}
+                          title="Edit"
+                          className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white transition-colors text-xs"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => handleDeleteFuel(log.id)}
+                          title="Delete"
+                          className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-colors text-xs"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -375,13 +497,28 @@ export default function VehicleDetails() {
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500"
                   />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-2 flex gap-2">
                   <button
                     type="submit"
-                    className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 shadow-md shadow-amber-900/20 transition-all"
+                    className={`flex-1 py-2.5 rounded-xl text-xs font-bold text-white shadow-md transition-all ${
+                      editingServiceId !== null
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500"
+                        : "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500"
+                    }`}
                   >
-                    + Add Maintenance Record
+                    {editingServiceId !== null
+                      ? "✏️ Update Maintenance Record"
+                      : "+ Add Maintenance Record"}
                   </button>
+                  {editingServiceId !== null && (
+                    <button
+                      type="button"
+                      onClick={cancelEditingService}
+                      className="px-3 py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </div>
               </form>
             </div>
@@ -410,11 +547,31 @@ export default function VehicleDetails() {
                         {log.serviceDescription}
                       </span>
                     </div>
-                    <div className="text-right shrink-0 ml-2">
-                      <span className="text-sm font-bold text-amber-400">
-                        {log.serviceCost.toLocaleString()}
-                      </span>
-                      <span className="text-xs text-slate-500 block">HUF</span>
+                    <div className="text-right shrink-0 ml-2 flex items-center gap-3">
+                      <div>
+                        <span className="text-sm font-bold text-amber-400">
+                          {log.serviceCost.toLocaleString()}
+                        </span>
+                        <span className="text-xs text-slate-500 block">
+                          HUF
+                        </span>
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-1 border-l border-slate-800 pl-2">
+                        <button
+                          onClick={() => startEditingService(log)}
+                          title="Edit"
+                          className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white transition-colors text-xs"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => handleDeleteService(log.id)}
+                          title="Delete"
+                          className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-colors text-xs"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 
@@ -37,9 +37,9 @@ export default function Dashboard() {
     }
   };
 
-  const userId = getUserIdFromToken();
+  const userId = useMemo(() => getUserIdFromToken(), []);
 
-  const fetchVehicles = async () => {
+  const fetchVehicles = useCallback(async () => {
     if (!userId) return;
     try {
       const response = await api.get(`/Vehicle/user-vehicles/${userId}`);
@@ -47,7 +47,7 @@ export default function Dashboard() {
     } catch (err) {
       setError("Vehicle list fetch failed. Please check the backend!");
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     if (!localStorage.getItem("token") || !userId) {
@@ -55,7 +55,7 @@ export default function Dashboard() {
     } else {
       fetchVehicles();
     }
-  }, []);
+  }, [userId, navigate, fetchVehicles]);
 
   const handleAddVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
