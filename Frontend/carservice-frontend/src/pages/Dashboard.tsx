@@ -233,7 +233,7 @@ export default function Dashboard() {
                   return (
                     <div
                       key={vehicle.id}
-                      className="group bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:bg-slate-900 hover:border-slate-700/80 transition-all duration-300 flex flex-coljustify-between shadow-lg hover:shadow-xl hover:-translate-y-1"
+                      className="group bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:bg-slate-900 hover:border-slate-700/80 transition-all duration-300 flex flex-col justify-between shadow-lg hover:shadow-xl hover:-translate-y-1"
                     >
                       <div>
                         <div className="flex justify-between items-start mb-3">
