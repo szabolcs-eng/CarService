@@ -124,11 +124,9 @@ export default function VehicleDetails() {
       };
 
       if (editingFuelId !== null) {
-        // Frissítés[cite: 6]
         await api.put(`/FuelLog/update/${editingFuelId}`, payload);
         setEditingFuelId(null);
       } else {
-        // Új hozzáadás[cite: 6]
         await api.post("/FuelLog/add", payload);
       }
 
