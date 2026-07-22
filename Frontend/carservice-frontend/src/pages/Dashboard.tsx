@@ -211,6 +211,7 @@ export default function Dashboard() {
               </h3>
             </div>
 
+
             {vehicles.length === 0 ? (
               <div className="bg-slate-900/50 border border-slate-800/80 rounded-2xl p-12 text-center text-slate-400">
                 <span className="text-5xl block mb-3">🛠️</span>
