@@ -71,7 +71,7 @@ export default function Dashboard() {
         brand: brand,
         model: model,
         year: year,
-        technicalInspectionExpiry: expiryDate ? expiryDate : null,
+        technicalInspectionExpiry: expiryDate || undefined,
       });
 
       setBrand("");

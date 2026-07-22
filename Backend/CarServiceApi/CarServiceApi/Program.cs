@@ -103,6 +103,8 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
         context.Database.Migrate();
 
         if (!context.Users.Any(u => u.Role == "Admin"))
