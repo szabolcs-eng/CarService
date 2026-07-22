@@ -6,6 +6,7 @@
         string LicensePlate,
         string Brand,
         string Model,
-        int Year
+        int Year,
+        DateTime? TechnicalInspectionExpiry
     );
 }

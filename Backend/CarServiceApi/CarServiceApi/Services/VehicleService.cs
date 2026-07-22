@@ -27,7 +27,8 @@ namespace CarServiceApi.Services
                 LicensePlate = request.LicensePlate,
                 Brand = request.Brand,
                 Model = request.Model,
-                Year = request.Year
+                Year = request.Year,
+                TechnicalInspectionExpiry = request.TechnicalInspectionExpiry
             };
 
             await _context.Vehicles.AddAsync(vehicle);
@@ -75,7 +76,8 @@ namespace CarServiceApi.Services
                     v.LicensePlate,
                     v.Brand,
                     v.Model,
-                    v.Year
+                    v.Year,
+                    v.TechnicalInspectionExpiry
                 )).ToListAsync();
 
             return new PagedResponse<List<VehicleResponseDto>>(vehicles, filter.PageNumber, filter.PageSize, totalRecords);
@@ -92,6 +94,7 @@ namespace CarServiceApi.Services
             vehicle.Brand = request.Brand;
             vehicle.Model = request.Model;
             vehicle.Year = request.Year;
+            vehicle.TechnicalInspectionExpiry = request.TechnicalInspectionExpiry;
 
             await _context.SaveChangesAsync();
         }
