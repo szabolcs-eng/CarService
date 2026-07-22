@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../api";
 import axios from "axios";
 
@@ -28,6 +28,19 @@ interface AvgConsumptionData {
 export default function VehicleDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const expiryDate = location.state?.expiryDate;
+  
+  const getDaysUntilExpiry = (date?: string) => {
+    if (!date) return null;
+    const today = new Date();
+    const expiry = new Date(date);
+    const diffTime = expiry.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const daysLeft = getDaysUntilExpiry(expiryDate);
 
   const [fuelLogs, setFuelLogs] = useState<FuelLog[]>([]);
   const [serviceLogs, setServiceLogs] = useState<ServiceLog[]>([]);
@@ -243,6 +256,22 @@ export default function VehicleDetails() {
         {error && (
           <div className="mb-6 bg-red-950/50 border border-red-500/50 text-red-300 px-4 py-3 rounded-xl text-sm">
             ⚠️ {error}
+          </div>
+        )}
+
+        {daysLeft !== null && daysLeft <= 30 && (
+          <div className="mb-8 bg-gradient-to-r from-red-950/80 to-slate-900 border border-red-500/50 p-5 rounded-2xl shadow-lg shadow-red-900/20 flex items-center gap-4">
+            <span className="text-3xl animate-pulse">⚠️</span>
+            <div>
+              <h4 className="text-base font-bold text-red-400">
+                Technical Inspection Warning
+              </h4>
+              <p className="text-sm text-slate-300 mt-1">
+                {daysLeft < 0 
+                  ? `The technical inspection expired ${Math.abs(daysLeft)} days ago! Please renew it immediately.` 
+                  : `Only ${daysLeft} days left until the technical inspection expires.`}
+              </p>
+            </div>
           </div>
         )}
 

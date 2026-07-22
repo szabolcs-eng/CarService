@@ -8,6 +8,7 @@ interface Vehicle {
   brand: string;
   model: string;
   year: number;
+  technicalInspectionExpiry?: string;
 }
 
 export default function Dashboard() {
@@ -19,6 +20,7 @@ export default function Dashboard() {
   const [model, setModel] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [expiryDate, setExpiryDate] = useState("");
 
   const getUserIdFromToken = (): number | null => {
     const token = localStorage.getItem("token");
@@ -69,16 +71,26 @@ export default function Dashboard() {
         brand: brand,
         model: model,
         year: year,
+        technicalInspectionExpiry: expiryDate ? expiryDate : null,
       });
 
       setBrand("");
       setModel("");
       setLicensePlate("");
       setYear(new Date().getFullYear());
+      setExpiryDate("");
       fetchVehicles();
     } catch (err) {
       setError("Failed to add the vehicle. Please check the backend!");
     }
+  };
+
+  const getDaysUntilExpiry = (expiryDate?: string) => {
+    if (!expiryDate) return null;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   const handleLogout = () => {
@@ -171,6 +183,17 @@ export default function Dashboard() {
                     className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
+                    Technical Inspection Expiry
+                  </label>
+                  <input
+                    type="date"
+                    value={expiryDate}
+                    onChange={(e) => setExpiryDate(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
                 <button
                   type="submit"
                   className="w-full py-3 mt-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-900/20 transition-all duration-200"
@@ -200,39 +223,67 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {vehicles.map((vehicle) => (
-                  <div
-                    key={vehicle.id}
-                    className="group bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:bg-slate-900 hover:border-slate-700/80 transition-all duration-300 flex flex-col justify-between shadow-lg hover:shadow-xl hover:-translate-y-1"
-                  >
-                    <div>
-                      <div className="flex justify-between items-start mb-3">
-                        <span className="px-3 py-1 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono font-bold tracking-widest text-blue-400 uppercase shadow-inner">
-                          {vehicle.licensePlate}
-                        </span>
-                        <span className="text-xs font-semibold px-2.5 py-1 bg-slate-950 text-slate-400 rounded-full border border-slate-800">
-                          {vehicle.year}
-                        </span>
-                      </div>
-                      <h5 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors duration-200">
-                        {vehicle.brand} {vehicle.model}
-                      </h5>
-                    </div>
+                {vehicles.map((vehicle) => {
+                  const daysLeft = getDaysUntilExpiry(
+                    vehicle.technicalInspectionExpiry,
+                  );
+                  const isExpiringSoon = daysLeft !== null && daysLeft <= 30;
 
-                    <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-xs text-slate-500 font-medium">
-                        Service & Fuel History
-                      </span>
-                      <button
-                        onClick={() => navigate(`/vehicle/${vehicle.id}`)}
-                        className="px-4 py-2 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 text-xs font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-200 flex items-center gap-1 shrink-0"
-                      >
-                        <span>Open Logs</span>
-                        <span>➔</span>
-                      </button>
+                  return (
+                    <div
+                      key={vehicle.id}
+                      className="group bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:bg-slate-900 hover:border-slate-700/80 transition-all duration-300 flex flex-coljustify-between shadow-lg hover:shadow-xl hover:-translate-y-1"
+                    >
+                      <div>
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="px-3 py-1 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono font-bold tracking-widest text-blue-400 uppercase shadow-inner">
+                              {vehicle.licensePlate}
+                            </span>
+                            {isExpiringSoon && (
+                              <span
+                                title={
+                                  daysLeft < 0
+                                    ? "The technical inspection has expired!"
+                                    : `The technical inspection will expire in ${daysLeft} days!`
+                                }
+                                className="flex h-3 w-3 relative cursor-help"
+                              >
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs font-semibold px-2.5 py-1 bg-slate-950 text-slate-400 rounded-full border border-slate-800">
+                            {vehicle.year}
+                          </span>
+                        </div>
+                        <h5 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors duration-200">
+                          {vehicle.brand} {vehicle.model}
+                        </h5>
+                      </div>
+
+                      <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
+                        <span className="text-xs text-slate-500 font-medium">
+                          Service & Fuel History
+                        </span>
+                        <button
+                          onClick={() =>
+                            navigate(`/vehicle/${vehicle.id}`, {
+                              state: {
+                                expiryDate: vehicle.technicalInspectionExpiry,
+                              },
+                            })
+                          }
+                          className="px-4 py-2 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 text-xs font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-200 flex items-center gap-1 shrink-0"
+                        >
+                          <span>Open Logs</span>
+                          <span>➔</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
