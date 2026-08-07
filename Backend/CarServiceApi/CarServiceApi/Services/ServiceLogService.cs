@@ -1,4 +1,4 @@
-﻿using CarServiceApi.Data;
+using CarServiceApi.Data;
 using CarServiceApi.DTOs;
 using CarServiceApi.Filters;
 using CarServiceApi.Models;
@@ -9,7 +9,6 @@ namespace CarServiceApi.Services
 {
     public class ServiceLogService : IServiceLogService
     {
-
         private readonly ApplicationDbContext _context;
 
         public ServiceLogService(ApplicationDbContext context)
@@ -17,12 +16,11 @@ namespace CarServiceApi.Services
             _context = context;
         }
 
-
-
-        public async Task AddServiceLogAsync(ServiceLogCreateDto request)
+        public async Task AddServiceLogAsync(ServiceLogCreateDto request, int requestingUserId)
         {
-            var vehicleExists = await _context.Vehicles.AnyAsync(v => v.Id == request.VehicleId);
-            if (!vehicleExists) throw new KeyNotFoundException("The specified vehicle was not found.");
+            var vehicle = await _context.Vehicles.FindAsync(request.VehicleId);
+            if (vehicle == null) throw new KeyNotFoundException("The specified vehicle was not found.");
+            VehicleService.EnsureOwnedBy(vehicle, requestingUserId);
 
             var serviceLog = new ServiceLog
             {
@@ -37,21 +35,22 @@ namespace CarServiceApi.Services
             await _context.SaveChangesAsync();
         }
 
-
-
-        public async Task DeleteServiceLogAsync(int id)
+        public async Task DeleteServiceLogAsync(int id, int requestingUserId)
         {
-            var log = await _context.ServiceLogs.FindAsync(id);
-            if (log == null) throw new KeyNotFoundException("Service log not found.");
+            var log = await _context.ServiceLogs.Include(s => s.Vehicle).FirstOrDefaultAsync(s => s.Id == id);
+            if (log?.Vehicle == null) throw new KeyNotFoundException("Service log not found.");
+            VehicleService.EnsureOwnedBy(log.Vehicle, requestingUserId);
 
             _context.ServiceLogs.Remove(log);
             await _context.SaveChangesAsync();
         }
 
-
-
-        public async Task<PagedResponse<List<ServiceLogResponseDto>>> GetServiceLogsForVehicleAsync(int vehicleId, PaginationFilter filter)
+        public async Task<PagedResponse<List<ServiceLogResponseDto>>> GetServiceLogsForVehicleAsync(int vehicleId, PaginationFilter filter, int requestingUserId)
         {
+            var vehicle = await _context.Vehicles.FindAsync(vehicleId);
+            if (vehicle == null) throw new KeyNotFoundException("The specified vehicle was not found.");
+            VehicleService.EnsureOwnedBy(vehicle, requestingUserId);
+
             var query = _context.ServiceLogs
                 .AsNoTracking()
                 .Where(s => s.VehicleId == vehicleId);
@@ -79,12 +78,11 @@ namespace CarServiceApi.Services
             return new PagedResponse<List<ServiceLogResponseDto>>(logs, filter.PageNumber, filter.PageSize, totalRecords);
         }
 
-
-
-        public async Task UpdateServiceLogAsync(int id, ServiceLogCreateDto request)
+        public async Task UpdateServiceLogAsync(int id, ServiceLogCreateDto request, int requestingUserId)
         {
-            var log = await _context.ServiceLogs.FindAsync(id);
-            if (log == null) throw new KeyNotFoundException("Service log not found.");
+            var log = await _context.ServiceLogs.Include(s => s.Vehicle).FirstOrDefaultAsync(s => s.Id == id);
+            if (log?.Vehicle == null) throw new KeyNotFoundException("Service log not found.");
+            VehicleService.EnsureOwnedBy(log.Vehicle, requestingUserId);
 
             log.Date = request.Date;
             log.CarKmCount = request.CarKmCount;

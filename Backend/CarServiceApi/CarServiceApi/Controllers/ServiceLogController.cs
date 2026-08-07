@@ -1,4 +1,4 @@
-﻿using CarServiceApi.DTOs;
+using CarServiceApi.DTOs;
 using CarServiceApi.Filters;
 using CarServiceApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +9,7 @@ namespace CarServiceApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ServiceLogController : ControllerBase
+    public class ServiceLogController : BaseApiController
     {
         private readonly IServiceLogService _serviceLogService;
 
@@ -18,61 +18,32 @@ namespace CarServiceApi.Controllers
             _serviceLogService = serviceLogService;
         }
 
-
-
         [HttpPost("add")]
         public async Task<IActionResult> AddServiceLog(ServiceLogCreateDto request)
         {
-            try
-            {
-                await _serviceLogService.AddServiceLogAsync(request);
-                return Ok("Service log successfully added!");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            await _serviceLogService.AddServiceLogAsync(request, CurrentUserId);
+            return Ok("Service log successfully added!");
         }
-
-
 
         [HttpGet("vehicle/{vehicleId}")]
         public async Task<IActionResult> GetServiceLogsForVehicle(int vehicleId, [FromQuery] PaginationFilter filter)
         {
-            var response = await _serviceLogService.GetServiceLogsForVehicleAsync(vehicleId, filter);
+            var response = await _serviceLogService.GetServiceLogsForVehicleAsync(vehicleId, filter, CurrentUserId);
             return Ok(response);
         }
-
-
 
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateServiceLog(int id, ServiceLogCreateDto request)
         {
-            try
-            {
-                await _serviceLogService.UpdateServiceLogAsync(id, request);
-                return Ok("Service log successfully updated!");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            await _serviceLogService.UpdateServiceLogAsync(id, request, CurrentUserId);
+            return Ok("Service log successfully updated!");
         }
-
-
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteServiceLog(int id)
         {
-            try
-            {
-                await _serviceLogService.DeleteServiceLogAsync(id);
-                return Ok("Service log successfully deleted!");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            await _serviceLogService.DeleteServiceLogAsync(id, CurrentUserId);
+            return Ok("Service log successfully deleted!");
         }
     }
 }

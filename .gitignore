@@ -398,6 +398,15 @@ MSBuild_Logs/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
+# SQLite runtime database files (never commit real or seeded data)
+*.db
+*.db-shm
+*.db-wal
+
+# Local secrets used by docker-compose (see .env.example)
+.env
+.env.local
+
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
@@ -427,5 +436,3 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-/Backend/CarServiceApi/CarServiceApi/CarService.db-shm
-/Backend/CarServiceApi/CarServiceApi/CarService.db-wal

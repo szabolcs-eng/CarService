@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import { clearSession } from "../lib/auth";
 
 interface Vehicle {
   id: number;
@@ -22,51 +23,30 @@ export default function Dashboard() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [expiryDate, setExpiryDate] = useState("");
 
-  const getUserIdFromToken = (): number | null => {
-    const token = localStorage.getItem("token");
-    if (!token) return null;
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const payload = JSON.parse(window.atob(base64));
-      const userId =
-        payload[
-          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-        ] || payload["nameid"];
-      return userId ? parseInt(userId) : null;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  const userId = useMemo(() => getUserIdFromToken(), []);
-
+  // Ownership is enforced server-side from the JWT now, so the frontend never
+  // needs to know or send its own user id - it just asks for "my vehicles".
   const fetchVehicles = useCallback(async () => {
-    if (!userId) return;
     try {
-      const response = await api.get(`/Vehicle/user-vehicles/${userId}`);
+      const response = await api.get("/Vehicle/my-vehicles");
       setVehicles(response.data.data || response.data);
-    } catch (err) {
+    } catch {
       setError("Vehicle list fetch failed. Please check the backend!");
     }
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
-    if (!localStorage.getItem("token") || !userId) {
-      navigate("/login");
-    } else {
-      fetchVehicles();
-    }
-  }, [userId, navigate, fetchVehicles]);
+    // Intentional fetch-on-mount: this effect synchronizes the vehicle list
+    // with the server on load, not with other React state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchVehicles();
+  }, [fetchVehicles]);
 
   const handleAddVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!userId) return;
 
     try {
       await api.post(`/Vehicle/add`, {
-        userId: userId,
         licensePlate: licensePlate,
         brand: brand,
         model: model,
@@ -80,7 +60,7 @@ export default function Dashboard() {
       setYear(new Date().getFullYear());
       setExpiryDate("");
       fetchVehicles();
-    } catch (err) {
+    } catch {
       setError("Failed to add the vehicle. Please check the backend!");
     }
   };
@@ -94,7 +74,7 @@ export default function Dashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    clearSession();
     navigate("/login");
   };
 

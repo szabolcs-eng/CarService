@@ -1,4 +1,4 @@
-﻿using CarServiceApi.Data;
+using CarServiceApi.Data;
 using CarServiceApi.DTOs;
 using CarServiceApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +11,6 @@ namespace CarServiceApi.Services
 {
     public class AuthService : IAuthService
     {
-
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
 
@@ -21,9 +20,7 @@ namespace CarServiceApi.Services
             _configuration = configuration;
         }
 
-
-
-        public async Task<string> LoginAsync(UserLoginDto request)
+        public async Task<AuthResponseDto> LoginAsync(UserLoginDto request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
@@ -32,10 +29,9 @@ namespace CarServiceApi.Services
                 throw new UnauthorizedAccessException("Invalid email or password.");
             }
 
-            return CreateToken(user);
+            var token = CreateToken(user);
+            return new AuthResponseDto(token, user.Role, user.Username);
         }
-
-
 
         public async Task RegisterAsync(UserRegisterDto request)
         {
@@ -60,7 +56,6 @@ namespace CarServiceApi.Services
             await _context.SaveChangesAsync();
         }
 
-
         private string CreateToken(User user)
         {
             var claims = new List<Claim>
@@ -71,20 +66,21 @@ namespace CarServiceApi.Services
                 new Claim(ClaimTypes.Role, user.Role)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("Jwt:Key").Value!));
+            var jwtKey = _configuration["Jwt:Key"]
+                ?? throw new InvalidOperationException("Jwt:Key is not configured. Set it via an environment variable or user secrets - never commit it to source control.");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
             var token = new JwtSecurityToken(
-                issuer: _configuration.GetSection("Jwt:Issuer").Value,
-                audience: _configuration.GetSection("Jwt:Audience").Value,
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.UtcNow.AddDays(1),
                 signingCredentials: creds
             );
 
-            string jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

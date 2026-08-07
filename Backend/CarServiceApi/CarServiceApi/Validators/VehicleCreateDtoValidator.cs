@@ -7,9 +7,6 @@ namespace CarServiceApi.Validators
     {
         public VehicleCreateDtoValidator()
         {
-            RuleFor(x => x.UserId)
-                .GreaterThan(0).WithMessage("Valid User ID is required!");
-
             RuleFor(x => x.LicensePlate)
                 .NotEmpty().WithMessage("License plate is required!")
                 .MaximumLength(10).WithMessage("License plate is too long.");

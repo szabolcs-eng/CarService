@@ -75,7 +75,7 @@ export default function VehicleDetails() {
       ]);
       setFuelLogs(fuelRes.data.data || fuelRes.data || []);
       setServiceLogs(serviceRes.data.data || serviceRes.data || []);
-    } catch (err) {
+    } catch {
       setError("Error fetching logs. Please check the backend!");
     }
   }, [id]);
@@ -104,13 +104,12 @@ export default function VehicleDetails() {
   }, [id]);
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/login");
-    } else {
-      fetchLogs();
-      fetchAverageConsumption();
-    }
-  }, [id, navigate, fetchLogs, fetchAverageConsumption]);
+    // Auth is already enforced by <ProtectedRoute> in App.tsx.
+    // Intentional fetch-on-mount, not a state-sync effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchLogs();
+    fetchAverageConsumption();
+  }, [id, fetchLogs, fetchAverageConsumption]);
 
   const handleAddFuel = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,7 +134,7 @@ export default function VehicleDetails() {
       setFuelCost("");
       fetchLogs();
       fetchAverageConsumption();
-    } catch (err) {
+    } catch {
       setError(
         "Error occurred while saving fuel log. Please check the backend!",
       );
@@ -149,7 +148,7 @@ export default function VehicleDetails() {
       await api.delete(`/FuelLog/delete/${logId}`);
       fetchLogs();
       fetchAverageConsumption();
-    } catch (err) {
+    } catch {
       setError(
         "Error occurred while deleting fuel log. Please check the backend!",
       );
@@ -196,7 +195,7 @@ export default function VehicleDetails() {
       setServiceDesc("");
       setServiceCost("");
       fetchLogs();
-    } catch (err) {
+    } catch {
       setError(
         "Error occurred while saving service log. Please check the backend!",
       );
@@ -209,7 +208,7 @@ export default function VehicleDetails() {
     try {
       await api.delete(`/ServiceLog/delete/${logId}`);
       fetchLogs();
-    } catch (err) {
+    } catch {
       setError(
         "Error occurred while deleting service log. Please check the backend!",
       );

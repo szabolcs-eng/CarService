@@ -1,7 +1,7 @@
-﻿services:
+services:
   # 1. Frontend (React + Nginx)
   frontend:
-    build: 
+    build:
       context: ../../../Frontend/carservice-frontend
       dockerfile: Dockerfile
     ports:
@@ -11,16 +11,19 @@
 
   # 2. Backend API (.NET 10)
   api:
-    build: 
-      context: .  
+    build:
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - Jwt__Key=Ide_Egy_Nagyon_Hosszú_És_Biztonságos_Titkos_Kulcsot_Írj_2026
+      # Secrets are read from a local .env file (gitignored) - never hardcode
+      # them here. Copy .env.example to .env and fill in real values.
+      - Jwt__Key=${JWT_KEY:?Set JWT_KEY in your .env file - see .env.example}
       - Jwt__Issuer=CarService
       - Jwt__Audience=CarServiceUsers
+      - Cors__AllowedOrigins__0=http://localhost:3000
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/carservice.db
     volumes:
       - carservice_storage:/app/data

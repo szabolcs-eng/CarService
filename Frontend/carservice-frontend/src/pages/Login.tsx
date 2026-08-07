@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api";
 import axios from "axios";
+import { setSession } from "../lib/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -19,8 +20,9 @@ export default function Login() {
         password: password,
       });
 
-      const token = response.data;
-      localStorage.setItem("token", token);
+      // Backend now returns { token, role, username } instead of a bare token string.
+      const { token } = response.data;
+      setSession(token);
       navigate("/dashboard");
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.data) {

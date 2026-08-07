@@ -1,5 +1,6 @@
-﻿using CarServiceApi.Data;
+using CarServiceApi.Data;
 using CarServiceApi.DTOs;
+using CarServiceApi.Exceptions;
 using CarServiceApi.Filters;
 using CarServiceApi.Models;
 using CarServiceApi.Wrappers;
@@ -11,19 +12,16 @@ namespace CarServiceApi.Services
     {
         private readonly ApplicationDbContext _context;
 
-
         public VehicleService(ApplicationDbContext context)
         {
             _context = context;
         }
 
-
-
-        public async Task AddVehicleAsync(VehicleCreateDto request)
+        public async Task AddVehicleAsync(VehicleCreateDto request, int ownerUserId)
         {
             var vehicle = new Vehicle
             {
-                UserId = request.UserId,
+                UserId = ownerUserId,
                 LicensePlate = request.LicensePlate,
                 Brand = request.Brand,
                 Model = request.Model,
@@ -33,27 +31,26 @@ namespace CarServiceApi.Services
 
             await _context.Vehicles.AddAsync(vehicle);
             await _context.SaveChangesAsync();
-
         }
 
-
-
-        public async Task DeleteVehicleAsync(int vehicleId)
+        public async Task DeleteVehicleAsync(int vehicleId, int requestingUserId)
         {
             var vehicle = await _context.Vehicles.FindAsync(vehicleId);
             if (vehicle == null) throw new KeyNotFoundException("Vehicle not found.");
+
+            EnsureOwnedBy(vehicle, requestingUserId);
 
             _context.Vehicles.Remove(vehicle);
             await _context.SaveChangesAsync();
         }
 
-
-
-        public async Task<PagedResponse<List<VehicleResponseDto>>> GetUserVehiclesAsync(int userId, PaginationFilter filter)
+        public async Task<PagedResponse<List<VehicleResponseDto>>> GetUserVehiclesAsync(int requestingUserId, PaginationFilter filter)
         {
+            // requestingUserId always comes from the JWT (see VehicleController),
+            // so this inherently only ever returns the caller's own vehicles.
             var query = _context.Vehicles
                 .AsNoTracking()
-                .Where(v => v.UserId == userId);
+                .Where(v => v.UserId == requestingUserId);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
@@ -83,12 +80,12 @@ namespace CarServiceApi.Services
             return new PagedResponse<List<VehicleResponseDto>>(vehicles, filter.PageNumber, filter.PageSize, totalRecords);
         }
 
-
-
-        public async Task UpdateVehicleAsync(int vehicleId, VehicleCreateDto request)
+        public async Task UpdateVehicleAsync(int vehicleId, VehicleCreateDto request, int requestingUserId)
         {
             var vehicle = await _context.Vehicles.FindAsync(vehicleId);
             if (vehicle == null) throw new KeyNotFoundException("Vehicle not found.");
+
+            EnsureOwnedBy(vehicle, requestingUserId);
 
             vehicle.LicensePlate = request.LicensePlate;
             vehicle.Brand = request.Brand;
@@ -97,6 +94,19 @@ namespace CarServiceApi.Services
             vehicle.TechnicalInspectionExpiry = request.TechnicalInspectionExpiry;
 
             await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Confirms the vehicle belongs to the requesting user before any read/write.
+        /// This is the check that was previously missing entirely - without it, any
+        /// authenticated user could act on any vehicle by guessing its id.
+        /// </summary>
+        internal static void EnsureOwnedBy(Vehicle vehicle, int requestingUserId)
+        {
+            if (vehicle.UserId != requestingUserId)
+            {
+                throw new ForbiddenAccessException("You do not have access to this vehicle.");
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using CarServiceApi.DTOs;
+using CarServiceApi.DTOs;
 using CarServiceApi.Filters;
 using CarServiceApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -9,74 +9,44 @@ namespace CarServiceApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class VehicleController : ControllerBase
+    public class VehicleController : BaseApiController
     {
         private readonly IVehicleService _vehicleService;
-
 
         public VehicleController(IVehicleService vehicleService)
         {
             _vehicleService = vehicleService;
         }
 
-
-
         [HttpPost("add")]
         public async Task<IActionResult> AddVehicle(VehicleCreateDto request)
         {
-            try
-            {
-                await _vehicleService.AddVehicleAsync(request);
-                return Ok("Vehicle successfully added to the profile!");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            // Ownership is always the caller - never taken from the request body.
+            await _vehicleService.AddVehicleAsync(request, CurrentUserId);
+            return Ok("Vehicle successfully added to the profile!");
         }
 
-
-
-        [HttpGet("user-vehicles/{userId}")]
-        public async Task<IActionResult> GetUserVehicles(int userId, [FromQuery] PaginationFilter filter)
+        // Deliberately no {userId} route parameter - a caller can only ever
+        // list their own vehicles, determined from their access token.
+        [HttpGet("my-vehicles")]
+        public async Task<IActionResult> GetMyVehicles([FromQuery] PaginationFilter filter)
         {
-            var response = await _vehicleService.GetUserVehiclesAsync(userId, filter);
+            var response = await _vehicleService.GetUserVehiclesAsync(CurrentUserId, filter);
             return Ok(response);
         }
-
-
 
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateVehicle(int id, VehicleCreateDto request)
         {
-            try
-            {
-                await _vehicleService.UpdateVehicleAsync(id, request);
-                return Ok("Vehicle details successfully updated!");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-
-            }
+            await _vehicleService.UpdateVehicleAsync(id, request, CurrentUserId);
+            return Ok("Vehicle details successfully updated!");
         }
-
-
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteVehicle(int id)
         {
-            try
-            {
-                await _vehicleService.DeleteVehicleAsync(id);
-                return Ok("Vehicle (and all associated logs) successfully deleted!");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-
-            }
+            await _vehicleService.DeleteVehicleAsync(id, CurrentUserId);
+            return Ok("Vehicle (and all associated logs) successfully deleted!");
         }
     }
-
 }
